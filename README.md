@@ -1,6 +1,6 @@
 # website-api
 
-NOTE: Based on s3-signed-urls function from https://github.com/chriscoombs/s3-signed-urls
+NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chriscoombs/s3-signed-urls
 
 ```bash
 .
@@ -14,7 +14,6 @@ NOTE: Based on s3-signed-urls function from https://github.com/chriscoombs/s3-si
 
 - AWS CLI already configured with Administrator permission
 - [NodeJS 8.10+ installed](https://nodejs.org/en/download/releases/)
-
 - [Docker installed](https://www.docker.com/community-edition)
 
 ## Setup process
