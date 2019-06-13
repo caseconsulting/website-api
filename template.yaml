@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless back-end for Case Consulting website
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+# Globals:
+#   Api:
+#     # Allows consultwithcase.com to call these APIs
+#     # SAM will automatically add AllowMethods with a list of methods for this API
+#     Cors: "'https://consultwithcase.com'"
+
+#     # Send/receive binary data through the APIs
+#     BinaryMediaTypes:
+#       # These are equivalent to image/gif and image/png when deployed
+#       - image~1gif
+#       - image~1png
+
+#     # Compression is triggered when response body size is greater than or equal to your configured threshold
+#     MinimumCompressionSize: 1024
+
+#     # Logging, Metrics, Throttling, and all other Stage settings
+#     MethodSettings: [
+#         {
+#           # Turn on Info logging
+#           'LoggingLevel': 'INFO',
+#           # Enable Metrics
+#           'MetricsEnabled': True,
+#           # Trace-level Logging
+#           'DataTraceEnabled': True,
+#           # On all Paths & methods
+#           'ResourcePath': '/*',
+#           'HttpMethod': '*',
+#         },
+#       ]
+
+Resources:
+  UploadFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Description: Generates signed URLs to upload files to S3. This bypasses the API Gateway payload size limit of 10 MB.
+      Handler: index.handler
+      Runtime: nodejs10.x
+      Timeout: 5
+      CodeUri: upload/
+      Events:
+        postProxy:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /{proxy+}
+            Method: put
+      Environment:
+        Variables:
+          bucket:
+            Ref: Bucket
+      Policies:
+        - Statement:
+            - Action:
+                - s3:PutObject
+              Resource:
+                - Fn::Sub:
+                    - arn:${AWS::Partition}:s3:::${bucketName}/*
+                    - bucketName:
+                        Ref: Bucket
+              Effect: Allow
+  Bucket:
+    Type: AWS::S3::Bucket
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  UploadApi:
+    Description: 'API Gateway endpoint URL for Prod stage for Upload function'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/'
+  UploadFunction:
+    Description: 'Upload Lambda Function ARN'
+    Value: !GetAtt UploadFunction.Arn
+  UploadFunctionIamRole:
+    Description: 'Implicit IAM Role created for Upload function'
+    Value: !GetAtt UploadFunctionRole.Arn

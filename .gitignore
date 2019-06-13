@@ -1,0 +1,11 @@
+node_modules
+.aws-sam
+node_modules
+coverage
+.DS_Store
+.env
+*.log
+/logs
+.nyc_output
+packaged.yaml
+*.pid

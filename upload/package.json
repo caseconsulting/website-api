@@ -1,0 +1,11 @@
+{
+  "name": "upload",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Generates signed URLs to upload files to S3. This bypasses the API Gateway payload size limit of 10 MB.",
+  "main": "index.js",
+  "devDependencies": {
+    "aws-sdk": "^2.474.0",
+    "eslint": "^5.16.0"
+  }
+}
