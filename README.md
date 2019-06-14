@@ -4,17 +4,24 @@ NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chr
 
 ```bash
 .
-├── README.MD                   <-- This instructions file
-├── upload                      <-- Source code for the upload lambda function
+├── .aws-sam                    <-- Packaged SAM function [temporary]
+├── events                      <-- Sample events
+│   └── upload.json             <-- Sample event for upload Lambda function
+├── upload                      <-- Source code for the upload Lambda function
 │   └── index.js                <-- Lambda function code
+│   └── package.json            <-- Lists Node.js module dependencies
+│   └── package-lock.json       <-- Locks down specific Node.js module versions
+├── package.json                <-- Defines development and deployment scripts
+├── packaged.yaml               <-- Packaged SAM template [temporary]
+├── README.MD                   <-- This instructions file
 ├── template.yaml               <-- SAM template
 ```
 
 ## Requirements
 
 - AWS CLI already configured with Administrator permission
-- [NodeJS 8.10+ installed](https://nodejs.org/en/download/releases/)
-- [Docker installed](https://www.docker.com/community-edition)
+- [Install NodeJS 8.10+](https://nodejs.org/en/download/releases/)
+- *Optional:* [Install Docker](https://www.docker.com/community-edition)
 
 ## Setup process
 
@@ -23,7 +30,7 @@ NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chr
 **Invoking function locally using a local sample payload**
 
 ```bash
-sam local invoke UploadFunction --event event.json
+sam local invoke UploadFunction --event samples/event.json
 ```
 
 **Invoking function locally through local API Gateway**
@@ -59,7 +66,7 @@ AWS Lambda NodeJS runtime requires a flat folder with all dependencies including
             ...
 ```
 
-Firstly, we need a `S3 bucket` where we can upload our Lambda functions packaged as ZIP before we deploy anything - If you don't have a S3 bucket to store code artifacts then this is a good time to create one:
+Firstly, we need an `S3 bucket` where we can upload our Lambda functions packaged as ZIP before we deploy anything - If you don't have a S3 bucket to store code artifacts then this is a good time to create one:
 
 ```bash
 aws s3 mb s3://<REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME>
