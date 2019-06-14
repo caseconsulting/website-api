@@ -65,7 +65,10 @@ Resources:
   Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref 'AWS::StackName'
+      BucketName: !Join
+        - ''
+        - - 'case-consulting-'
+          - !Ref 'AWS::StackName'
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

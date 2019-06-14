@@ -8,7 +8,7 @@
     "build": "sam build",
     "deploy:dev": "npm run build && npm run package:dev && npm run deploy:packaged:dev",
     "deploy:packaged:dev": "sam deploy --template-file packaged.yaml --stack-name website-api-dev --capabilities CAPABILITY_IAM --region us-east-1",
-    "invoke:upload": "bucket=website-api-dev sam local invoke UploadFunction --event events/upload.json",
+    "invoke:upload": "bucket=case-consulting-website-api-dev sam local invoke UploadFunction --event events/upload.json",
     "package:dev": "sam package --s3-bucket case-consulting-website-code --output-template-file packaged.yaml",
     "tail:upload:dev": "sam logs -n UploadFunction --stack-name website-api-dev --tail",
     "test": "echo \"Error: no test specified\" && exit 1"
