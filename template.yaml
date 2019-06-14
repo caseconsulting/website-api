@@ -70,8 +70,8 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   UploadApi:
-    Description: 'API Gateway endpoint URL for Prod stage for Upload function'
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/'
+    Description: 'API Gateway endpoint URL for Prod stage'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
   UploadFunction:
     Description: 'Upload Lambda Function ARN'
     Value: !GetAtt UploadFunction.Arn
