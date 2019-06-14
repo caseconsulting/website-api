@@ -22,7 +22,7 @@ NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chr
 
 - AWS CLI already configured with Administrator permission
 - [Install NodeJS 8.10+](https://nodejs.org/en/download/releases/)
-- *Optional:* [Install Docker](https://www.docker.com/community-edition)
+- _Optional:_ [Install Docker](https://www.docker.com/community-edition)
 
 ## Setup process
 
@@ -31,7 +31,7 @@ NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chr
 **Invoking function locally using a local sample payload**
 
 ```bash
-sam local invoke UploadFunction --event samples/event.json
+sam local invoke UploadFunction --event samples/upload.json
 ```
 
 **Invoking function locally through local API Gateway**
@@ -138,7 +138,7 @@ Here are a few things you can try to get more acquainted with building serverles
 ### Learn how SAM Build can help you with dependencies
 
 - Build the project with `sam build --use-container`
-- Invoke with `sam local invoke UploadFunction --event event.json`
+- Invoke with `sam local invoke UploadFunction --event samples/upload.json`
 - Update tests
 
 ### Create an additional API resource
@@ -177,7 +177,7 @@ All commands used throughout this document
 
 ```bash
 # Invoke function locally with event.json as an input
-sam local invoke UploadFunction --event event.json
+sam local invoke UploadFunction --event events/upload.json
 
 # Run API Gateway locally
 sam local start-api
