@@ -1,8 +1,6 @@
 # website-api
 
-NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chriscoombs/s3-signed-urls
-
-```bash
+```
 .
 ├── .aws-sam                    <-- Packaged SAM function [temporary]
 ├── events                      <-- Sample events
@@ -11,11 +9,14 @@ NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chr
 │   └── index.js                <-- Lambda function code
 │   └── package.json            <-- Lists Node.js module dependencies
 │   └── package-lock.json       <-- Locks down specific Node.js module versions
+├── env.json                    <-- Environment vars used when functions are invoked locally
 ├── package.json                <-- Defines development and deployment scripts
 ├── packaged.yaml               <-- Packaged SAM template [temporary]
 ├── README.MD                   <-- This instructions file
 ├── template.yaml               <-- SAM template
 ```
+
+NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chriscoombs/s3-signed-urls
 
 ## Requirements
 
