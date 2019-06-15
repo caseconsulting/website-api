@@ -6,11 +6,27 @@
   "homepage": "https://www.consultwithcase.com/",
   "scripts": {
     "build": "sam build",
+    "build:invoke:upload": "npm run build && npm run invoke:upload",
+    "clean": "rm -rf .nyc_output coverage",
     "deploy:dev": "npm run build && npm run package:dev && npm run deploy:packaged:dev",
     "deploy:packaged:dev": "sam deploy --template-file packaged.yaml --stack-name website-api-dev --capabilities CAPABILITY_IAM --region us-east-1",
+    "eslint": "eslint . --ext .js --ignore-path .jshintignore --fix",
     "invoke:upload": "sam local invoke UploadFunction --env-vars env.json --event events/upload.json",
+    "lint": "npm run eslint",
     "package:dev": "sam package --s3-bucket case-consulting-website-code --output-template-file packaged.yaml",
+    "precommit": "npm run eslint && npm run test",
     "tail:upload:dev": "sam logs -n UploadFunction --stack-name website-api-dev --tail",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  }
+    "test": "jasmine",
+    "test-coverage": "nyc --reporter=text --reporter=html --exclude=spec/** jasmine"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "jasmine": "^3.4.0",
+    "nyc": "^14.1.1",
+    "precommit-hook": "^3.0.0"
+  },
+  "pre-commit": [
+    "eslint",
+    "test"
+  ]
 }

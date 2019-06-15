@@ -1,46 +1,62 @@
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
+const AWS = require('aws-sdk');
 
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 
-const { bucket } = process.env;
+let lib;
 
-// the number of seconds to expire the pre-signed URL operation in, default is 900 (15 minutes)
-const expires = 900;
+// Number of seconds to expire the pre-signed URL, default is 900 (15 minutes)
+const EXPIRES = 900;
 
-const methodOperations = new Map([
-  // ['GET', 'getObject'],
-  ['PUT', 'putObject']
-]);
+const METHOD_OPERATIONS = new Map([['PUT', 'putObject']]);
 
-const getSignedUrl = (method, path) => {
-  const operation = methodOperations.get(method);
+// NOTE: See https://github.com/aws/aws-sdk-js/issues/1008#issuecomment-385502545
+//           [S3 Get Signed URL accepts callback but not promise]
+async function _getSignedUrlPromise(operation, params) {
+  return new Promise((resolve, reject) => {
+    return s3.getSignedUrl(operation, params, (err, url) => {
+      err ? reject(err) : resolve(url);
+    });
+  });
+}
+
+async function _getSignedUrl(method, path) {
+  const operation = lib.METHOD_OPERATIONS.get(method);
   const params = {
-    Bucket: bucket,
+    Bucket: process.env.bucket,
     Key: path,
-    Expires: expires
+    Expires: lib.EXPIRES
   };
-  return s3.getSignedUrl(operation, params);
-};
+  return await lib._getSignedUrlPromise(operation, params);
+}
 
-const handler = (event, context, callback) => {
+async function handler(event) {
   const method = event.httpMethod;
   const path = event.pathParameters.proxy;
-  console.log(`Received ${method} request for ${path}`);
-  if (methodOperations.get(method)) {
-    const url = getSignedUrl(method, path);
-    callback(null, {
+  console.log(`Received ${method} request for ${path}`); // eslint-disable-line no-console
+
+  if (lib.METHOD_OPERATIONS.get(method)) {
+    const url = await lib._getSignedUrl(method, path);
+    return {
       statusCode: 307,
       headers: {
         Location: url
       }
-    });
+    };
   } else {
-    callback(null, {
+    return {
       statusCode: 405
-    });
+    };
   }
-};
+}
 
-module.exports = {
+lib = {
+  EXPIRES,
+  METHOD_OPERATIONS,
+
+  _getSignedUrlPromise,
+  _getSignedUrl,
+
   handler
 };
+
+module.exports = lib;

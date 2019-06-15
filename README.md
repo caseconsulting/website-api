@@ -4,7 +4,7 @@
 .
 ├── .aws-sam                    <-- Packaged SAM function [temporary]
 ├── events                      <-- Sample events
-│   └── upload.json             <-- Sample event for upload Lambda function
+├── specs                       <-- Unit tests
 ├── upload                      <-- Source code for the upload Lambda function
 │   └── index.js                <-- Lambda function code
 │   └── package.json            <-- Lists Node.js module dependencies
