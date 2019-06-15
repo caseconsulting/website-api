@@ -9,10 +9,10 @@
 │   └── index.js                <-- Lambda function code
 │   └── package.json            <-- Lists Node.js module dependencies
 │   └── package-lock.json       <-- Locks down specific Node.js module versions
+├── README.MD                   <-- This instructions file
 ├── env.json                    <-- Environment vars used when functions are invoked locally
 ├── package.json                <-- Defines development and deployment scripts
 ├── packaged.yaml               <-- Packaged SAM template [temporary]
-├── README.MD                   <-- This instructions file
 ├── template.yaml               <-- SAM template
 ```
 
@@ -21,7 +21,7 @@ NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chr
 ## Requirements
 
 - AWS CLI already configured with Administrator permission
-- [Install NodeJS 8.10+](https://nodejs.org/en/download/releases/)
+- [Install NodeJS 8.12+](https://nodejs.org/en/download/releases/)
 - _Optional:_ [Install Docker](https://www.docker.com/community-edition)
 
 ## Setup process
