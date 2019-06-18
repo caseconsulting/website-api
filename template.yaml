@@ -12,8 +12,13 @@ Parameters:
       - prod
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-# Globals:
-#   Api:
+Globals:
+  Api:
+    EndpointConfiguration: REGIONAL
+
+  Function:
+    Runtime: nodejs10.x
+
 #     # Allows consultwithcase.com to call these APIs
 #     # SAM will automatically add AllowMethods with a list of methods for this API
 #     Cors: "'https://consultwithcase.com'"
@@ -48,7 +53,6 @@ Resources:
     Properties:
       Description: Generates signed URLs to upload files to S3. This bypasses the API Gateway payload size limit of 10 MB.
       Handler: index.handler
-      Runtime: nodejs10.x
       Timeout: 5
       CodeUri: upload/
       Events:
