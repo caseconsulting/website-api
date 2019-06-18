@@ -1,5 +1,5 @@
 {
-  "resource": "/{proxy+}",
+  "resource": "/upload/{proxy+}",
   "path": "/logo-banner.gif",
   "httpMethod": "PUT",
   "headers": {
@@ -40,11 +40,11 @@
   "stageVariables": null,
   "requestContext": {
     "resourceId": "123456",
-    "resourcePath": "/{proxy+}",
+    "resourcePath": "/upload/{proxy+}",
     "httpMethod": "PUT",
     "extendedRequestId": "bP1ubF76IAMFkkA=",
     "requestTime": "14/Jun/2019:02:15:05 +0000",
-    "path": "/Prod/logo-banner.gif",
+    "path": "/Prod/upload/logo-banner.gif",
     "accountId": "123456789012",
     "protocol": "HTTP/1.1",
     "stage": "Prod",

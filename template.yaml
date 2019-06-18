@@ -48,33 +48,6 @@ Globals:
 #       ]
 
 Resources:
-  UploadFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Description: Generates signed URLs to upload files to S3. This bypasses the API Gateway payload size limit of 10 MB.
-      Handler: index.handler
-      Timeout: 5
-      CodeUri: upload/
-      Events:
-        postProxy:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /{proxy+}
-            Method: put
-      Environment:
-        Variables:
-          bucket:
-            Ref: Bucket
-      Policies:
-        - Statement:
-            - Action:
-                - s3:PutObject
-              Resource:
-                - Fn::Sub:
-                    - arn:${AWS::Partition}:s3:::${bucketName}/*
-                    - bucketName:
-                        Ref: Bucket
-              Effect: Allow
   Bucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
@@ -83,7 +56,7 @@ Resources:
         - ''
         - - 'case-consulting-job-applications-'
           - !Ref Stage
-  DynamoDBTable:
+  Table:
     Type: AWS::DynamoDB::Table
     DeletionPolicy: Retain
     Properties:
@@ -109,6 +82,61 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+  ApplyFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Description: Accepts 'Apply Now' submissions from website and stores data in DynamoDB table.
+      Handler: index.handler
+      Timeout: 5
+      CodeUri: apply/
+      Events:
+        postProxy:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /apply/
+            Method: post
+      Environment:
+        Variables:
+          table:
+            Ref: Table
+      Policies:
+        - Statement:
+            - Action:
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource:
+                - Fn::Sub:
+                    - arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}
+                    - tableName:
+                        Ref: Table
+              Effect: Allow
+  UploadFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Description: Generates signed URLs to upload files to S3. This bypasses the API Gateway payload size limit of 10 MB.
+      Handler: index.handler
+      Timeout: 5
+      CodeUri: upload/
+      Events:
+        postProxy:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /upload/{proxy+}
+            Method: put
+      Environment:
+        Variables:
+          bucket:
+            Ref: Bucket
+      Policies:
+        - Statement:
+            - Action:
+                - s3:PutObject
+              Resource:
+                - Fn::Sub:
+                    - arn:${AWS::Partition}:s3:::${bucketName}/*
+                    - bucketName:
+                        Ref: Bucket
+              Effect: Allow
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -119,7 +147,7 @@ Outputs:
     Value: !Ref Bucket
   TableName:
     Description: 'Name of DynamoDB table used by Upload function'
-    Value: !Ref DynamoDBTable
+    Value: !Ref Table
   UploadApi:
     Description: 'API Gateway endpoint URL for Prod stage'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'

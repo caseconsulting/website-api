@@ -1,0 +1,14 @@
+{
+  "name": "apply",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Accepts 'Apply Now' submissions from website and stores data in DynamoDB table.",
+  "main": "index.js",
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.477.0"
+  }
+}

@@ -3,6 +3,10 @@
 ```
 .
 ├── .aws-sam                    <-- Packaged SAM function [temporary]
+├── apply                       <-- Source code for the apply Lambda function
+│   └── index.js                <-- Lambda function code
+│   └── package.json            <-- Lists Node.js module dependencies
+│   └── package-lock.json       <-- Locks down specific Node.js module versions
 ├── events                      <-- Sample events
 ├── specs                       <-- Unit tests
 ├── upload                      <-- Source code for the upload Lambda function
