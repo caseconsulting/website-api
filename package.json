@@ -9,7 +9,7 @@
     "build:invoke:upload": "npm run build && npm run invoke:upload",
     "clean": "rm -rf .nyc_output coverage",
     "deploy:dev": "npm run build && npm run package:dev && npm run deploy:packaged:dev",
-    "deploy:packaged:dev": "sam deploy --template-file packaged.yaml --stack-name website-api-dev --capabilities CAPABILITY_IAM --region us-east-1",
+    "deploy:packaged:dev": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=dev --stack-name website-api-dev --capabilities CAPABILITY_IAM --region us-east-1",
     "eslint": "eslint . --ext .js --ignore-path .jshintignore --fix",
     "invoke:upload": "sam local invoke UploadFunction --env-vars env.json --event events/upload.json",
     "lint": "npm run eslint",

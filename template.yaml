@@ -2,6 +2,15 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless back-end for Case Consulting website
 
+Parameters:
+  Stage:
+    Type: String
+    Description: 'Deployment environment (e.g., dev, test, or prod)'
+    AllowedValues:
+      - dev
+      - test
+      - prod
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 # Globals:
 #   Api:
@@ -64,11 +73,38 @@ Resources:
               Effect: Allow
   Bucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
     Properties:
       BucketName: !Join
         - ''
-        - - 'case-consulting-'
-          - !Ref 'AWS::StackName'
+        - - 'case-consulting-job-applications-'
+          - !Ref Stage
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: !Join
+        - ''
+        - - 'job-applications-'
+          - !Ref Stage
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: email-index
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -77,6 +113,9 @@ Outputs:
   BucketName:
     Description: 'Name of S3 Bucket used by Upload function'
     Value: !Ref Bucket
+  TableName:
+    Description: 'Name of DynamoDB table used by Upload function'
+    Value: !Ref DynamoDBTable
   UploadApi:
     Description: 'API Gateway endpoint URL for Prod stage'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
