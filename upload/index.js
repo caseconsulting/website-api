@@ -32,7 +32,7 @@ async function _getSignedUrl(method, path) {
 async function handler(event) {
   const method = event.httpMethod;
   const path = event.pathParameters.proxy;
-  console.log(`Received ${method} request for ${path}`); // eslint-disable-line no-console
+  console.log(`Received ${method} request for ${path}`);
 
   if (lib.METHOD_OPERATIONS.get(method)) {
     const url = await lib._getSignedUrl(method, path);
