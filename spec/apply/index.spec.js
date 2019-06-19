@@ -81,7 +81,7 @@ describe('apply', () => {
         const result = await lib.handler(event);
 
         expect(result.statusCode).toEqual(200);
-        expect(result.body).toEqual({
+        expect(JSON.parse(result.body)).toEqual({
           id: jasmine.any(String),
           message: 'Submission was successful'
         });

@@ -43,12 +43,13 @@ async function handler(event) {
     const data = lib._parseData(body);
     await lib._putData(id, data);
     console.log('Returning success');
+    const responseBody = {
+      id,
+      message: 'Submission was successful'
+    };
     return {
       statusCode: 200,
-      body: {
-        id,
-        message: 'Submission was successful'
-      }
+      body: JSON.stringify(responseBody)
     };
   } catch (err) {
     console.error('ERROR:', err);

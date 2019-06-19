@@ -13,11 +13,19 @@ Parameters:
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
-  Api:
-    EndpointConfiguration: REGIONAL
-
   Function:
     Runtime: nodejs10.x
+
+  Api:
+    # API Gateway endpoint type
+    EndpointConfiguration: REGIONAL
+
+    # API Gateway access logging
+    AccessLogSetting:
+      DestinationArn: !Sub
+        - arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/website-api-${stageName}:*
+        - stageName: !Ref Stage
+      Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
 
 #     # Allows consultwithcase.com to call these APIs
 #     # SAM will automatically add AllowMethods with a list of methods for this API
