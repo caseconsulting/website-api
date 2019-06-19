@@ -10,13 +10,14 @@ function _getDynamoDB() {
 
 function _parseData(body) {
   let data = {};
-  if (body.firstName) data.firstName = body.firstName;
-  if (body.lastName) data.lastName = body.lastName;
-  if (body.email) data.email = body.email;
-  if (body.jobTitles) data.jobTitles = body.jobTitles; // _.join(body.jobTitles, ', ')
-  if (body.otherJobTitle) data.otherJobTitle = body.otherJobTitle;
-  if (body.hearAboutUs) data.hearAboutUs = body.hearAboutUs; // _.join(body.hearAboutUs, ', ')
-  if (body.comments) data.comments = body.comments;
+  if (_.get(body, 'firstName')) data.firstName = _.get(body, 'firstName');
+  if (_.get(body, 'lastName')) data.lastName = _.get(body, 'lastName');
+  if (_.get(body, 'email')) data.email = _.get(body, 'email');
+  if (_.get(body, 'jobTitles')) data.jobTitles = _.join(_.get(body, 'jobTitles'));
+  if (_.get(body, 'otherJobTitle')) data.otherJobTitle = _.get(body, 'otherJobTitle');
+  if (_.get(body, 'hearAboutUs')) data.hearAboutUs = _.join(_.get(body, 'hearAboutUs'));
+  if (_.get(body, 'otherHearAboutUs')) data.otherHearAboutUs = _.get(body, 'otherHearAboutUs');
+  if (_.get(body, 'comments')) data.comments = _.get(body, 'comments');
   return data;
 }
 

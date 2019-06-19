@@ -10,9 +10,10 @@ describe('apply', () => {
     firstName: 'firstName',
     lastName: 'lastName',
     email: 'email',
-    jobTitles: 'jobTitles',
+    jobTitles: ['jobTitle1', 'jobTitle2'],
     otherJobTitle: 'otherJobTitle',
-    hearAboutUs: 'hearAboutUs',
+    hearAboutUs: ['where1'],
+    otherHearAboutUs: 'otherHearAboutUs',
     comments: 'comments'
   };
 
@@ -21,11 +22,20 @@ describe('apply', () => {
   describe('_parseData', () => {
     let body;
 
+    describe('WHEN body is undefined', () => {
+      beforeEach(() => (body = undefined));
+
+      it('SHOULD return empty object', async () => {
+        const result = await lib._parseData(body);
+        expect(result).toEqual({});
+      });
+    });
+
     describe('WHEN body is empty', () => {
       beforeEach(() => (body = {}));
 
       it('SHOULD return empty object', async () => {
-        const result = await lib._parseData({});
+        const result = await lib._parseData(body);
         expect(result).toEqual({});
       });
     });
@@ -33,9 +43,13 @@ describe('apply', () => {
     describe('WHEN body contains data', () => {
       beforeEach(() => (body = _.merge({ extraneous: 'extraneous' }, data)));
 
-      it('SHOULD return object with specific attributes', async () => {
+      it('SHOULD return object with parsed data', async () => {
+        const response = _.merge(_.omit(data, ['jobTitles', 'hearAboutUs']), {
+          jobTitles: _.join(data.jobTitles),
+          hearAboutUs: _.join(data.hearAboutUs)
+        });
         const result = await lib._parseData(body);
-        expect(result).toEqual(data);
+        expect(result).toEqual(response);
       });
     });
   }); // _parseData
