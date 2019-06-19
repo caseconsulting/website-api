@@ -3,6 +3,10 @@ Transform: AWS::Serverless-2016-10-31
 Description: Serverless back-end for Case Consulting website
 
 Parameters:
+  CorsDomain:
+    Type: String
+    Description: Domain used when configuring CORS
+    Default: "'*'"
   Stage:
     Type: String
     Description: 'Deployment environment (e.g., dev, test, or prod)'
@@ -27,9 +31,11 @@ Globals:
         - stageName: !Ref Stage
       Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
 
-#     # Allows consultwithcase.com to call these APIs
-#     # SAM will automatically add AllowMethods with a list of methods for this API
-#     Cors: "'https://consultwithcase.com'"
+    # Cross-Origin Resource Sharing (CORS) Configuration: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration
+    Cors:
+      AllowMethods: "'OPTIONS,POST,PUT'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: !Ref CorsDomain
 
 #     # Send/receive binary data through the APIs
 #     BinaryMediaTypes:
@@ -52,8 +58,8 @@ Resources:
     Properties:
       TableName: !Join
         - ''
-        - - 'job-applications-'
-          - !Ref Stage
+        - - !Ref Stage
+          - '-job-applications'
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
       AttributeDefinitions:

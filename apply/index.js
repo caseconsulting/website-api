@@ -34,13 +34,17 @@ async function _putData(id, data) {
 }
 
 async function handler(event) {
-  console.log(`Received event: ${JSON.stringify(event)}`);
-  const body = JSON.parse(event.body);
-  console.log(`body: ${JSON.stringify(body)}`);
-  const id = uuid();
-  console.log(`Generated ID: ${id}`);
   try {
+    console.log(`Received event: ${JSON.stringify(event)}`);
+
+    const body = JSON.parse(event.body);
+    console.log(`body: ${JSON.stringify(body)}`);
+
+    const id = uuid();
+    console.log(`Generated ID: ${id}`);
+
     const data = lib._parseData(body);
+
     await lib._putData(id, data);
     console.log('Returning success');
     const responseBody = {
@@ -49,6 +53,10 @@ async function handler(event) {
     };
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(responseBody)
     };
   } catch (err) {
