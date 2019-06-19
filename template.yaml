@@ -37,24 +37,6 @@ Globals:
 #       - image~1gif
 #       - image~1png
 
-#     # Compression is triggered when response body size is greater than or equal to your configured threshold
-#     MinimumCompressionSize: 1024
-
-#     # Logging, Metrics, Throttling, and all other Stage settings
-#     MethodSettings: [
-#         {
-#           # Turn on Info logging
-#           'LoggingLevel': 'INFO',
-#           # Enable Metrics
-#           'MetricsEnabled': True,
-#           # Trace-level Logging
-#           'DataTraceEnabled': True,
-#           # On all Paths & methods
-#           'ResourcePath': '/*',
-#           'HttpMethod': '*',
-#         },
-#       ]
-
 Resources:
   Bucket:
     Type: AWS::S3::Bucket
