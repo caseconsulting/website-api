@@ -13,9 +13,9 @@ function _parseData(body) {
   if (body.firstName) data.firstName = body.firstName;
   if (body.lastName) data.lastName = body.lastName;
   if (body.email) data.email = body.email;
-  if (body.jobTitles) data.jobTitles = body.jobTitles;
+  if (body.jobTitles) data.jobTitles = body.jobTitles; // _.join(body.jobTitles, ', ')
   if (body.otherJobTitle) data.otherJobTitle = body.otherJobTitle;
-  if (body.hearAboutUs) data.hearAboutUs = body.hearAboutUs;
+  if (body.hearAboutUs) data.hearAboutUs = body.hearAboutUs; // _.join(body.hearAboutUs, ', ')
   if (body.comments) data.comments = body.comments;
   return data;
 }

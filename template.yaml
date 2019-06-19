@@ -17,10 +17,10 @@ Globals:
     Runtime: nodejs10.x
 
   Api:
-    # API Gateway endpoint type
+    # API Gateway endpoint type: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
     EndpointConfiguration: REGIONAL
 
-    # API Gateway access logging
+    # API Gateway access logging: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-accesslogsetting.html
     AccessLogSetting:
       DestinationArn: !Sub
         - arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/website-api-${stageName}:*
