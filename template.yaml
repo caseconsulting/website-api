@@ -34,7 +34,7 @@ Globals:
     # Cross-Origin Resource Sharing (CORS) Configuration: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration
     Cors:
       AllowMethods: "'OPTIONS,POST,PUT'"
-      AllowHeaders: "'Content-Type'"
+      AllowHeaders: "'Content-Type, Cache-Control, X-Requested-With'"
       AllowOrigin: !Ref ClientDomain
 
 #     # Send/receive binary data through the APIs
