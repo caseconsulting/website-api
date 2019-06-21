@@ -144,9 +144,15 @@ Outputs:
   TableName:
     Description: 'Name of DynamoDB table used by Upload function'
     Value: !Ref Table
-  UploadApi:
+  ApiEndpoint:
     Description: 'API Gateway endpoint URL for Prod stage'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+  ApplyFunction:
+    Description: 'Apply Lambda Function ARN'
+    Value: !GetAtt ApplyFunction.Arn
+  ApplyFunctionIamRole:
+    Description: 'Implicit IAM Role created for Apply function'
+    Value: !GetAtt ApplyFunctionRole.Arn
   UploadFunction:
     Description: 'Upload Lambda Function ARN'
     Value: !GetAtt UploadFunction.Arn
