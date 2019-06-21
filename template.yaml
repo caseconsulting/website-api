@@ -3,9 +3,9 @@ Transform: AWS::Serverless-2016-10-31
 Description: Serverless back-end for Case Consulting website
 
 Parameters:
-  CorsDomain:
+  ClientDomain:
     Type: String
-    Description: Domain used when configuring CORS
+    Description: Client domain used when configuring CORS
     Default: "'*'"
   Stage:
     Type: String
@@ -35,7 +35,7 @@ Globals:
     Cors:
       AllowMethods: "'OPTIONS,POST,PUT'"
       AllowHeaders: "'Content-Type'"
-      AllowOrigin: !Ref CorsDomain
+      AllowOrigin: !Ref ClientDomain
 
 #     # Send/receive binary data through the APIs
 #     BinaryMediaTypes:
