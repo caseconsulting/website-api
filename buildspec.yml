@@ -1,0 +1,29 @@
+version: 0.2
+
+env:
+  variables:
+    BUCKET: 'case-consulting-website-code'
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+    commands:
+      - echo Entering install phase
+      - apt-get update -y
+      - npm ci
+    finally:
+      - echo Completed install
+  build:
+    commands:
+      - echo Entering build phase
+      - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file packaged.yaml
+    finally:
+      - echo Completed build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - packaged.yaml
