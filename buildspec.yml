@@ -12,6 +12,8 @@ phases:
       - echo Entering install phase
       - apt-get update -y
       - npm ci
+      - (cd apply && npm ci)
+      - (cd upload && npm ci)
     finally:
       - echo Completed install
   pre_build:
