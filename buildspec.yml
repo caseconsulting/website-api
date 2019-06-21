@@ -14,6 +14,12 @@ phases:
       - npm ci
     finally:
       - echo Completed install
+  pre_build:
+    commands:
+      - echo Entering pre_build phase
+      - npm run precommit
+    finally:
+      - echo Completed pre_build
   build:
     commands:
       - echo Entering build phase
