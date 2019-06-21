@@ -14,6 +14,7 @@
 │   └── package.json            <-- Lists Node.js module dependencies
 │   └── package-lock.json       <-- Locks down specific Node.js module versions
 ├── README.MD                   <-- This instructions file
+├── buildspec.yml               <-- CodeBuild specification
 ├── env.json                    <-- Environment vars used when functions are invoked locally
 ├── package.json                <-- Defines development and deployment scripts
 ├── packaged.yaml               <-- Packaged SAM template [temporary]
