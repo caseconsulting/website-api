@@ -18,6 +18,7 @@ function _parseData(body) {
   if (_.get(body, 'hearAboutUs')) data.hearAboutUs = _.join(_.get(body, 'hearAboutUs'));
   if (_.get(body, 'otherHearAboutUs')) data.otherHearAboutUs = _.get(body, 'otherHearAboutUs');
   if (_.get(body, 'comments')) data.comments = _.get(body, 'comments');
+  if (_.get(body, 'fileNames')) data.fileNames = _.join(_.get(body, 'fileNames'));
   return data;
 }
 
