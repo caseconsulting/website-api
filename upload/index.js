@@ -39,6 +39,7 @@ async function handler(event) {
     return {
       statusCode: 307,
       headers: {
+        'Access-Control-Allow-Origin': '*',
         Location: url
       }
     };
