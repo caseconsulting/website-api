@@ -3,6 +3,7 @@ const lib = require('../../upload/index');
 describe('upload', () => {
   const bucketName = 'BUCKET_NAME';
   const clientDomain = 'CLIENT_DOMAIN';
+  const clientProtocol = 'https';
 
   const get = 'GET';
   const put = 'PUT';
@@ -17,6 +18,7 @@ describe('upload', () => {
 
   beforeAll(() => (process.env.bucket = bucketName));
   beforeAll(() => (process.env.clientDomain = clientDomain));
+  beforeAll(() => (process.env.clientProtocol = clientProtocol));
 
   describe('_getSignedUrl', () => {
     beforeEach(() => spyOn(lib, '_getSignedUrlPromise').and.returnValue(Promise.resolve(url)));
@@ -49,7 +51,7 @@ describe('upload', () => {
         expect(result.statusCode).toEqual(307);
         expect(result.headers.Location).toEqual(url);
         expect(result.headers).toEqual({
-          'Access-Control-Allow-Origin': `'${clientDomain}'`,
+          'Access-Control-Allow-Origin': `${clientProtocol}://${clientDomain}`,
           Location: url
         });
       });

@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 describe('apply', () => {
   const clientDomain = 'CLIENT_DOMAIN';
+  const clientProtocol = 'https';
   const tableName = 'TABLE_NAME';
 
   const id = 'id';
@@ -20,6 +21,7 @@ describe('apply', () => {
   };
 
   beforeAll(() => (process.env.clientDomain = clientDomain));
+  beforeAll(() => (process.env.clientProtocol = clientProtocol));
   beforeAll(() => (process.env.table = tableName));
 
   describe('_parseData', () => {
@@ -105,7 +107,7 @@ describe('apply', () => {
           message: 'Submission was successful'
         });
         expect(result.headers).toEqual({
-          'Access-Control-Allow-Origin': `'${clientDomain}'`,
+          'Access-Control-Allow-Origin': `${clientProtocol}://${clientDomain}`,
           'Content-Type': 'application/json'
         });
       });

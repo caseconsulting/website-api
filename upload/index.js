@@ -36,10 +36,12 @@ async function handler(event) {
 
   if (lib.METHOD_OPERATIONS.get(method)) {
     const url = await lib._getSignedUrl(method, path);
+    const clientDomain = process.env.clientDomain;
+    const allowedDomain = clientDomain === '*' ? clientDomain : `${process.env.clientProtocol}://${clientDomain}`;
     return {
       statusCode: 307,
       headers: {
-        'Access-Control-Allow-Origin': `'${process.env.clientDomain}'`,
+        'Access-Control-Allow-Origin': allowedDomain,
         Location: url
       }
     };

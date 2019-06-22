@@ -55,10 +55,12 @@ async function handler(event) {
       id,
       message: 'Submission was successful'
     };
+    const clientDomain = process.env.clientDomain;
+    const allowedDomain = clientDomain === '*' ? clientDomain : `${process.env.clientProtocol}://${clientDomain}`;
     return {
       statusCode: 200,
       headers: {
-        'Access-Control-Allow-Origin': `'${process.env.clientDomain}'`,
+        'Access-Control-Allow-Origin': allowedDomain,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(responseBody)

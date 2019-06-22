@@ -6,7 +6,11 @@ Parameters:
   ClientDomain:
     Type: String
     Description: Client domain used when configuring CORS
-    Default: "'*'"
+    Default: '*'
+  ClientProtocol:
+    Type: String
+    Description: Client protocol used when configuring CORS for S3 bucket
+    Default: 'https'
   Stage:
     Type: String
     Description: 'Deployment environment (e.g., dev, test, or prod)'
@@ -35,13 +39,29 @@ Globals:
     Cors:
       AllowMethods: "'OPTIONS,POST,PUT'"
       AllowHeaders: "'Content-Type, Cache-Control, X-Requested-With'"
-      AllowOrigin: !Ref ClientDomain
+      AllowOrigin: !If
+        - WildcardDomain
+        - !Join
+          - ''
+          - - "'"
+            - !Ref ClientDomain
+            - "'"
+        - !Join
+          - ''
+          - - "'"
+            - !Ref ClientProtocol
+            - '://'
+            - !Ref ClientDomain
+            - "'"
 
 #     # Send/receive binary data through the APIs
 #     BinaryMediaTypes:
 #       # These are equivalent to image/gif and image/png when deployed
 #       - image~1gif
 #       - image~1png
+
+Conditions:
+  WildcardDomain: !Equals [!Ref ClientDomain, '*']
 
 Resources:
   Bucket:
@@ -54,11 +74,21 @@ Resources:
           - !Ref Stage
       CorsConfiguration:
         CorsRules:
-          - AllowedHeaders: ['*']
-            AllowedMethods: [POST]
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
             AllowedOrigins:
-              ['https://www.consultwithcase.com', 'https://app-website.netlify.com/', 'http://localhost:8080']
-            ExposedHeaders: [Date]
+              - !If
+                - WildcardDomain
+                - !Ref ClientDomain
+                - !Join
+                  - ''
+                  - - !Ref ClientProtocol
+                    - '://'
+                    - !Ref ClientDomain
+            ExposedHeaders:
+              - Date
             Id: jobApplicationsPostCorsRule
             MaxAge: '180'
   Table:
@@ -103,6 +133,7 @@ Resources:
       Environment:
         Variables:
           clientDomain: !Ref ClientDomain
+          clientProtocol: !Ref ClientProtocol
           table: !Ref Table
       Policies:
         - Statement:
@@ -132,6 +163,7 @@ Resources:
         Variables:
           bucket: !Ref Bucket
           clientDomain: !Ref ClientDomain
+          clientProtocol: !Ref ClientProtocol
       Policies:
         - Statement:
             - Action:
