@@ -47,12 +47,13 @@ describe('apply', () => {
       beforeEach(() => (body = _.merge({ extraneous: 'extraneous' }, data)));
 
       it('SHOULD return object with parsed data', async () => {
+        const result = await lib._parseData(body);
         const response = _.merge(_.omit(data, ['jobTitles', 'hearAboutUs', 'fileNames']), {
           jobTitles: _.join(data.jobTitles),
           hearAboutUs: _.join(data.hearAboutUs),
-          fileNames: _.join(data.fileNames)
+          fileNames: _.join(data.fileNames),
+          submittedAt: jasmine.any(String)
         });
-        const result = await lib._parseData(body);
         expect(result).toEqual(response);
       });
     });

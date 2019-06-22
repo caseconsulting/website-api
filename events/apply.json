@@ -60,6 +60,6 @@
     "domainName": "1234567890.execute-api.us-east-1.amazonaws.com",
     "apiId": "1234567890"
   },
-  "body": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"email\": \"jdoe@mail.com\",\n  \"jobTitles\": [\"Intern\", \"Other\"],\n  \"otherJobTitle\": \"Chef\",\n  \"hearAboutUs\": [\"Website\", \"LinkedIn\"],\n  \"comments\": \"abcdefg hijklm nopqr stuvwx yz.\"\n}",
+  "body": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"email\": \"jdoe@mail.com\",\n  \"jobTitles\": [\"Intern\", \"Other\"],\n  \"otherJobTitle\": \"Chef\",\n  \"hearAboutUs\": [\"Website\", \"LinkedIn\"],\n  \"otherHearAboutUs\": \"Grapevine\",\n  \"comments\": \"abcdefg hijklm nopqr stuvwx yz.\",\n \"fileNames\": [\"id/resume.pdf\"]\n  }",
   "isBase64Encoded": false
 }

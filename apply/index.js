@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const _ = require('lodash');
+const moment = require('moment');
 const uuid = require('uuid/v4');
 
 let lib;
@@ -19,6 +20,7 @@ function _parseData(body) {
   if (_.get(body, 'otherHearAboutUs')) data.otherHearAboutUs = _.get(body, 'otherHearAboutUs');
   if (_.get(body, 'comments')) data.comments = _.get(body, 'comments');
   if (_.get(body, 'fileNames')) data.fileNames = _.join(_.get(body, 'fileNames'));
+  if (!_.isEmpty(data)) data.submittedAt = moment().toISOString();
   return data;
 }
 
