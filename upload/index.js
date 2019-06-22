@@ -4,8 +4,8 @@ const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 
 let lib;
 
-// Number of seconds to expire the pre-signed URL, default is 900 (15 minutes)
-const EXPIRES = 900;
+// Number of seconds to expire the pre-signed URL, default is 180 (3 minutes)
+const EXPIRES = 180;
 
 const METHOD_OPERATIONS = new Map([['PUT', 'putObject']]);
 
