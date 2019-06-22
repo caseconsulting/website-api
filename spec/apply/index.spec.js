@@ -3,6 +3,7 @@ const lib = require('../../apply/index');
 const _ = require('lodash');
 
 describe('apply', () => {
+  const clientDomain = 'CLIENT_DOMAIN';
   const tableName = 'TABLE_NAME';
 
   const id = 'id';
@@ -18,6 +19,7 @@ describe('apply', () => {
     fileNames: ['resume.pdf']
   };
 
+  beforeAll(() => (process.env.clientDomain = clientDomain));
   beforeAll(() => (process.env.table = tableName));
 
   describe('_parseData', () => {
@@ -100,6 +102,10 @@ describe('apply', () => {
         expect(JSON.parse(result.body)).toEqual({
           id: jasmine.any(String),
           message: 'Submission was successful'
+        });
+        expect(result.headers).toEqual({
+          'Access-Control-Allow-Origin': `'${clientDomain}'`,
+          'Content-Type': 'application/json'
         });
       });
     });

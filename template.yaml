@@ -54,12 +54,13 @@ Resources:
           - !Ref Stage
       CorsConfiguration:
         CorsRules:
-        - AllowedHeaders: ['*']
-          AllowedMethods: [POST]
-          AllowedOrigins: ['https://www.consultwithcase.com', 'https://app-website.netlify.com/, 'http://localhost:8080']
-          ExposedHeaders: [Date]
-          Id: jobApplicationsPostCorsRule
-          MaxAge: '180'
+          - AllowedHeaders: ['*']
+            AllowedMethods: [POST]
+            AllowedOrigins:
+              ['https://www.consultwithcase.com', 'https://app-website.netlify.com/', 'http://localhost:8080']
+            ExposedHeaders: [Date]
+            Id: jobApplicationsPostCorsRule
+            MaxAge: '180'
   Table:
     Type: AWS::DynamoDB::Table
     DeletionPolicy: Retain
@@ -101,8 +102,8 @@ Resources:
             Method: post
       Environment:
         Variables:
-          table:
-            Ref: Table
+          clientDomain: !Ref ClientDomain
+          table: !Ref Table
       Policies:
         - Statement:
             - Action:
@@ -129,8 +130,8 @@ Resources:
             Method: put
       Environment:
         Variables:
-          bucket:
-            Ref: Bucket
+          bucket: !Ref Bucket
+          clientDomain: !Ref ClientDomain
       Policies:
         - Statement:
             - Action:

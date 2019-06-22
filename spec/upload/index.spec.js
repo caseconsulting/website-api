@@ -1,10 +1,12 @@
 const lib = require('../../upload/index');
 
 describe('upload', () => {
+  const bucketName = 'BUCKET_NAME';
+  const clientDomain = 'CLIENT_DOMAIN';
+
   const get = 'GET';
   const put = 'PUT';
   const path = 'PATH';
-  const bucketName = 'BUCKET_NAME';
   const url = 'URL';
 
   const params = {
@@ -14,6 +16,7 @@ describe('upload', () => {
   };
 
   beforeAll(() => (process.env.bucket = bucketName));
+  beforeAll(() => (process.env.clientDomain = clientDomain));
 
   describe('_getSignedUrl', () => {
     beforeEach(() => spyOn(lib, '_getSignedUrlPromise').and.returnValue(Promise.resolve(url)));
@@ -45,6 +48,10 @@ describe('upload', () => {
 
         expect(result.statusCode).toEqual(307);
         expect(result.headers.Location).toEqual(url);
+        expect(result.headers).toEqual({
+          'Access-Control-Allow-Origin': `'${clientDomain}'`,
+          Location: url
+        });
       });
     });
 

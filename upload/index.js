@@ -39,7 +39,7 @@ async function handler(event) {
     return {
       statusCode: 307,
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': `'${process.env.clientDomain}'`,
         Location: url
       }
     };

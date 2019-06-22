@@ -56,7 +56,7 @@ async function handler(event) {
     return {
       statusCode: 200,
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': `'${process.env.clientDomain}'`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(responseBody)
