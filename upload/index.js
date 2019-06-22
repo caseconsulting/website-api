@@ -7,57 +7,80 @@ let lib;
 // Number of seconds to expire the pre-signed URL, default is 180 (3 minutes)
 const EXPIRES = 180;
 
-const METHOD_OPERATIONS = new Map([['PUT', 'putObject']]);
+function _createResponse(data) {
+  const signature = Object.assign(
+    {
+      'Content-Type': '',
+      acl: 'public-read-write',
+      success_action_status: '201'
+    },
+    data.fields
+  );
+  const response = {
+    signature,
+    postEndpoint: data.url
+  };
+  return response;
+}
 
 // NOTE: See https://github.com/aws/aws-sdk-js/issues/1008#issuecomment-385502545
-//           [S3 Get Signed URL accepts callback but not promise]
-async function _getSignedUrlPromise(operation, params) {
+//       S3 Get Signed URL (and Create Presigned Post) accept callback but not promise.
+async function _createPresignedPostPromise(params) {
   return new Promise((resolve, reject) => {
-    return s3.getSignedUrl(operation, params, (err, url) => {
-      err ? reject(err) : resolve(url);
+    return s3.createPresignedPost(params, (err, data) => {
+      err ? reject(err) : resolve(data);
     });
   });
 }
 
-async function _getSignedUrl(method, path) {
-  const operation = lib.METHOD_OPERATIONS.get(method);
+async function _createPresignedPost(path) {
   const params = {
     Bucket: process.env.bucket,
-    Key: path,
-    Expires: lib.EXPIRES
+    Expires: lib.EXPIRES,
+    Fields: {
+      Key: path
+    },
+    Conditions: [
+      { acl: 'public-read-write' },
+      { success_action_status: '201' },
+      ['starts-with', '$Content-Type', ''],
+      ['starts-with', '$key', '']
+    ]
   };
-  return await lib._getSignedUrlPromise(operation, params);
+  try {
+    const data = await lib._createPresignedPostPromise(params);
+    return lib._createResponse(data);
+  } catch (err) {
+    console.error('ERROR:', err);
+    throw err;
+  }
 }
 
 async function handler(event) {
-  const method = event.httpMethod;
   const path = event.pathParameters.proxy;
-  console.log(`Received ${method} request for ${path}`);
+  console.log(`Received request for ${path}`);
 
-  if (lib.METHOD_OPERATIONS.get(method)) {
-    const url = await lib._getSignedUrl(method, path);
-    const clientDomain = process.env.clientDomain;
-    const allowedDomain = clientDomain === '*' ? clientDomain : `${process.env.clientProtocol}://${clientDomain}`;
-    return {
-      statusCode: 307,
-      headers: {
-        'Access-Control-Allow-Origin': allowedDomain,
-        Location: url
-      }
-    };
-  } else {
-    return {
-      statusCode: 405
-    };
-  }
+  const data = await lib._createPresignedPost(path);
+  console.log('Returning success');
+  const clientDomain = process.env.clientDomain;
+  const allowedDomain = clientDomain === '*' ? clientDomain : `${process.env.clientProtocol}://${clientDomain}`;
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': allowedDomain,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  };
 }
 
 lib = {
   EXPIRES,
-  METHOD_OPERATIONS,
 
-  _getSignedUrlPromise,
-  _getSignedUrl,
+  _createPresignedPostPromise,
+  _createPresignedPost,
+  _createResponse,
 
   handler
 };
