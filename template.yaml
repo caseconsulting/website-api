@@ -52,6 +52,14 @@ Resources:
         - ''
         - - 'case-consulting-job-applications-'
           - !Ref Stage
+      CorsConfiguration:
+        CorsRules:
+        - AllowedHeaders: ['*']
+          AllowedMethods: [POST]
+          AllowedOrigins: ['https://www.consultwithcase.com', 'https://app-website.netlify.com/, 'http://localhost:8080']
+          ExposedHeaders: [Date]
+          Id: jobApplicationsPostCorsRule
+          MaxAge: '180'
   Table:
     Type: AWS::DynamoDB::Table
     DeletionPolicy: Retain
