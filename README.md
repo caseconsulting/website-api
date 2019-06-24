@@ -21,8 +21,6 @@
 ├── template.yaml               <-- SAM template
 ```
 
-NOTE: _upload_ function is based on _s3-signed-urls_ from https://github.com/chriscoombs/s3-signed-urls
-
 ## Requirements
 
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) installed and configured with administrative privileges
