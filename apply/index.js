@@ -11,15 +11,17 @@ function _getDynamoDB() {
 
 function _parseData(body) {
   let data = {};
-  if (_.get(body, 'firstName')) data.firstName = _.get(body, 'firstName');
-  if (_.get(body, 'lastName')) data.lastName = _.get(body, 'lastName');
-  if (_.get(body, 'email')) data.email = _.get(body, 'email');
-  if (_.get(body, 'jobTitles')) data.jobTitles = _.join(_.get(body, 'jobTitles'));
-  if (_.get(body, 'otherJobTitle')) data.otherJobTitle = _.get(body, 'otherJobTitle');
-  if (_.get(body, 'hearAboutUs')) data.hearAboutUs = _.join(_.get(body, 'hearAboutUs'));
-  if (_.get(body, 'otherHearAboutUs')) data.otherHearAboutUs = _.get(body, 'otherHearAboutUs');
-  if (_.get(body, 'comments')) data.comments = _.get(body, 'comments');
-  if (_.get(body, 'fileNames')) data.fileNames = _.join(_.get(body, 'fileNames'));
+  if (_.get(body, 'firstName') && !_.isEmpty(body.firstName)) data.firstName = body.firstName;
+  if (_.get(body, 'lastName') && !_.isEmpty(body.lastName)) data.lastName = body.lastName;
+  if (_.get(body, 'email') && !_.isEmpty(body.email)) data.email = body.email;
+  if (_.get(body, 'jobTitles') && !_.isEmpty(body.jobTitles)) data.jobTitles = _.join(body.jobTitles);
+  if (_.get(body, 'otherJobTitle') && !_.isEmpty(body.otherJobTitle)) data.otherJobTitle = body.otherJobTitle;
+  if (_.get(body, 'hearAboutUs') && !_.isEmpty(body.hearAboutUs)) data.hearAboutUs = _.join(body.hearAboutUs);
+  if (_.get(body, 'otherHearAboutUs') && !_.isEmpty(body.otherHearAboutUs)) {
+    data.otherHearAboutUs = body.otherHearAboutUs;
+  }
+  if (_.get(body, 'comments') && !_.isEmpty(body.comments)) data.comments = body.comments;
+  if (_.get(body, 'fileNames') && !_.isEmpty(body.fileNames)) data.fileNames = _.join(body.fileNames);
   if (!_.isEmpty(data)) data.submittedAt = moment().toISOString();
   return data;
 }

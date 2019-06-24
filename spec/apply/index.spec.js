@@ -45,6 +45,28 @@ describe('apply', () => {
       });
     });
 
+    describe('WHEN body contains data with empty values', () => {
+      beforeEach(
+        () =>
+          (body = {
+            firstName: '',
+            lastName: '',
+            email: '',
+            jobTitles: [],
+            otherJobTitle: '',
+            hearAboutUs: [],
+            otherHearAboutUs: '',
+            comments: '',
+            fileNames: []
+          })
+      );
+
+      it('SHOULD return empty object', async () => {
+        const result = await lib._parseData(body);
+        expect(result).toEqual({});
+      });
+    });
+
     describe('WHEN body contains data', () => {
       beforeEach(() => (body = _.merge({ extraneous: 'extraneous' }, data)));
 
