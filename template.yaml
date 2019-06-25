@@ -145,6 +145,7 @@ Resources:
           clientDomain: !Ref ClientDomain
           clientProtocol: !Ref ClientProtocol
           table: !Ref Table
+          topicArn: !Ref Topic
       Policies:
         - Statement:
             - Action:
