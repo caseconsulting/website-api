@@ -129,7 +129,7 @@ npm run test
 
 ## Cleanup
 
-In order to delete our Serverless Application recently deployed you can use the following AWS CLI Command:
+To delete your serverless application, use the following AWS CLI Command:
 
 ```bash
 aws cloudformation delete-stack --stack-name <REPLACE_WITH_YOUR_STACK_NAME>
