@@ -116,6 +116,17 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+  Topic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Join
+        - ''
+        - - 'Topic for job submissions for '
+          - !Ref Stage
+      TopicName: !Join
+        - ''
+        - - 'job-applications-'
+          - !Ref Stage
   ApplyFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:

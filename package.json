@@ -24,7 +24,8 @@
     "tail:dev:apply": "sam logs -n ApplyFunction --stack-name website-api-dev --tail",
     "tail:dev:upload": "sam logs -n UploadFunction --stack-name website-api-dev --tail",
     "test": "jasmine",
-    "test-coverage": "nyc --reporter=text --reporter=html --exclude=spec/** jasmine"
+    "test-coverage": "nyc --reporter=text --reporter=html --exclude=spec/** jasmine",
+    "validate": "npm ls"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
