@@ -49,7 +49,7 @@ async function _publish(id, data) {
     Message,
     Subject
   };
-  console.log(`PUT: ${JSON.stringify(params)}`);
+  console.log(`PUBLISH: ${JSON.stringify(params)}`);
   return await lib
     ._getSNS()
     .publish(params)
