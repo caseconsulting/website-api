@@ -8,6 +8,9 @@ let lib;
 function _getDynamoDB() {
   return new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
 }
+function _getSNS() {
+  return new AWS.SNS({ apiVersion: '2010-03-31' });
+}
 
 function _parseData(body) {
   let data = {};
@@ -75,6 +78,7 @@ async function handler(event) {
 
 lib = {
   _getDynamoDB,
+  _getSNS,
   _parseData,
   _putData,
 
