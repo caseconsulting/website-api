@@ -115,7 +115,7 @@ Resources:
     Properties:
       DisplayName: !Join
         - ''
-        - - 'Topic for job submissions for '
+        - - 'Topic for job submissions - '
           - !Ref Stage
       TopicName: !Join
         - ''
