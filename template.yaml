@@ -153,7 +153,7 @@ Resources:
                 - dynamodb:UpdateItem
               Resource:
                 - Fn::Sub:
-                    - arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:${tableName}
+                    - arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}
                     - tableName: !Ref Table
               Effect: Allow
         - Statement:
@@ -161,7 +161,7 @@ Resources:
                 - sns:Publish
               Resource:
                 - Fn::Sub:
-                    - arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:table/${topicName}
+                    - arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${topicName}
                     - topicName: !GetAtt Topic.TopicName
               Effect: Allow
   UploadFunction:
