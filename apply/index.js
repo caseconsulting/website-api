@@ -20,6 +20,9 @@ function _parseData(body) {
   if (_.get(body, 'jobTitles') && !_.isEmpty(body.jobTitles)) data.jobTitles = _.join(body.jobTitles);
   if (_.get(body, 'otherJobTitle') && !_.isEmpty(body.otherJobTitle)) data.otherJobTitle = body.otherJobTitle;
   if (_.get(body, 'hearAboutUs') && !_.isEmpty(body.hearAboutUs)) data.hearAboutUs = _.join(body.hearAboutUs);
+  if (_.get(body, 'referralHearAboutUs') && !_.isEmpty(body.referralHearAboutUs)) {
+    data.referralHearAboutUs = body.referralHearAboutUs;
+  }
   if (_.get(body, 'otherHearAboutUs') && !_.isEmpty(body.otherHearAboutUs)) {
     data.otherHearAboutUs = body.otherHearAboutUs;
   }

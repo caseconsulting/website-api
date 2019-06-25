@@ -16,6 +16,7 @@ describe('apply', () => {
     otherJobTitle: 'otherJobTitle',
     hearAboutUs: ['where1'],
     otherHearAboutUs: 'otherHearAboutUs',
+    referralHearAboutUs: 'referralHearAboutUs',
     comments: 'comments',
     fileNames: ['resume.pdf']
   };
@@ -56,6 +57,7 @@ describe('apply', () => {
             otherJobTitle: '',
             hearAboutUs: [],
             otherHearAboutUs: '',
+            referralHearAboutUs: '',
             comments: '',
             fileNames: []
           })
