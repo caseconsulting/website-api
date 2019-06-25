@@ -41,6 +41,20 @@ async function _putData(id, data) {
     .put(params)
     .promise();
 }
+async function _publish(id, data) {
+  const Message = ''; // TODO: put html message here
+  const Subject = `Submission received from ${data.firstName} ${data.lastName}`; // TODO: put subject message here
+  const params = {
+    TopicArn: process.env.topicArn,
+    Message,
+    Subject
+  };
+  console.log(`PUT: ${JSON.stringify(params)}`);
+  return await lib
+    ._getSNS()
+    .publish(params)
+    .promise();
+}
 
 async function handler(event) {
   try {
@@ -55,6 +69,7 @@ async function handler(event) {
     const data = lib._parseData(body);
 
     await lib._putData(id, data);
+    // await lib._publish(id, data);
     console.log('Returning success');
     const responseBody = {
       id,
@@ -81,6 +96,7 @@ lib = {
   _getSNS,
   _parseData,
   _putData,
+  _publish,
 
   handler
 };
