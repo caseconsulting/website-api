@@ -42,7 +42,7 @@ async function _putData(id, data) {
     .promise();
 }
 async function _publish(id, data) {
-  const Message = ''; // TODO: put html message here
+  const Message = 'New application submitted'; // TODO: put html message here
   const Subject = `Submission received from ${data.firstName} ${data.lastName}`; // TODO: put subject message here
   const params = {
     TopicArn: process.env.topicArn,
