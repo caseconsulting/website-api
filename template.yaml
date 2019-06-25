@@ -153,8 +153,16 @@ Resources:
                 - dynamodb:UpdateItem
               Resource:
                 - Fn::Sub:
-                    - arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}
+                    - arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:${tableName}
                     - tableName: !Ref Table
+              Effect: Allow
+        - Statement:
+            - Action:
+                - sns:Publish
+              Resource:
+                - Fn::Sub:
+                    - arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:table/${topicName}
+                    - topicName: !GetAtt Topic.TopicName
               Effect: Allow
   UploadFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
