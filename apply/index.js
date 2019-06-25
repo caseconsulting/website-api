@@ -69,7 +69,7 @@ async function handler(event) {
     const data = lib._parseData(body);
 
     await lib._putData(id, data);
-    // await lib._publish(id, data);
+    await lib._publish(id, data);
     console.log('Returning success');
     const responseBody = {
       id,

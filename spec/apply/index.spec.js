@@ -117,6 +117,9 @@ describe('apply', () => {
 
     afterEach(() => expect(lib._putData).toHaveBeenCalledWith(jasmine.any(String), data));
 
+    beforeEach(() => spyOn(lib, '_publish').and.returnValue({}));
+    afterEach(() => expect(lib._publish).toHaveBeenCalledWith(jasmine.any(String), data));
+
     describe('WHEN no error thrown', () => {
       beforeEach(() => spyOn(lib, '_putData').and.returnValue({}));
 
