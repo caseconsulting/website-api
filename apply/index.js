@@ -14,6 +14,7 @@ function _getSNS() {
 
 function _parseData(body) {
   let data = {};
+  // console.log(`'''${body.comments}'''`);
   if (_.get(body, 'firstName') && !_.isEmpty(body.firstName)) data.firstName = body.firstName;
   if (_.get(body, 'lastName') && !_.isEmpty(body.lastName)) data.lastName = body.lastName;
   if (_.get(body, 'email') && !_.isEmpty(body.email)) data.email = body.email;
@@ -45,22 +46,16 @@ async function _putData(id, data) {
     .promise();
 }
 async function _publish(id, data) {
-  const Message = `<h2>New job application has been received from ${data.firstName} ${data.lastName}!</h2>
-  <p>Name: ${data.firstName} ${data.lastName}</p>
-  <p>Email: ${data.email} </p>
-  <p>Job Title(s): ${data.jobTitles}, ${data.otherJobTitles} </p>
-  <p>How they heard about Case: ${data.hearAboutUs}, ${data.otherHearAboutUs} </p>
-  <p>Employee Referral?: ${data.referralHearAboutUs} </p>
-  <p>Resume Filenames in S3: ${data.fileNames} </p>
-  <p>Other Comments: ${data.comments} </p>
-  <br>
-  <p>Name: ${data.firstName} ${data.lastName}
-  Email: ${data.email} 
-  Job Title(s): ${data.jobTitles}, ${data.otherJobTitles} 
-  How they heard about Case: ${data.hearAboutUs}, ${data.otherHearAboutUs} 
-  Employee Referral?: ${data.referralHearAboutUs} 
-  Resume Filenames in S3: ${data.fileNames} 
-  Other Comments: ${data.comments} </p>`; // TODO: put html message here
+  const Message = `New job application has been received from ${data.firstName} ${data.lastName}!
+
+  Name: ${data.firstName} ${data.lastName}
+  Email: ${data.email}
+  Job Title(s): ${data.jobTitles.replace(',', ', ')}
+  Other Job Titles?: ${data.otherJobTitle}
+  How they heard about Case: ${data.hearAboutUs}, ${data.otherHearAboutUs}
+  Employee Referral?: ${data.referralHearAboutUs}
+  Resume Filenames in S3: ${data.fileNames}
+  Other Comments: ${data.comments} `; // TODO: put html message here
   const Subject = `New job application from ${data.firstName} ${data.lastName}`; // TODO: put subject message here
   const params = {
     TopicArn: process.env.topicArn,
