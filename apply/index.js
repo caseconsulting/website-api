@@ -45,8 +45,23 @@ async function _putData(id, data) {
     .promise();
 }
 async function _publish(id, data) {
-  const Message = 'New application submitted'; // TODO: put html message here
-  const Subject = `Submission received from ${data.firstName} ${data.lastName}`; // TODO: put subject message here
+  const Message = `<h2>New job application has been received from ${data.firstName} ${data.lastName}!</h2>
+  <p>Name: ${data.firstName} ${data.lastName}</p>
+  <p>Email: ${data.email} </p>
+  <p>Job Title(s): ${data.jobTitles}, ${data.otherJobTitles} </p>
+  <p>How they heard about Case: ${data.hearAboutUs}, ${data.otherHearAboutUs} </p>
+  <p>Employee Referral?: ${data.referralHearAboutUs} </p>
+  <p>Resume Filenames in S3: ${data.fileNames} </p>
+  <p>Other Comments: ${data.comments} </p>
+  <br>
+  <p>Name: ${data.firstName} ${data.lastName}
+  Email: ${data.email} 
+  Job Title(s): ${data.jobTitles}, ${data.otherJobTitles} 
+  How they heard about Case: ${data.hearAboutUs}, ${data.otherHearAboutUs} 
+  Employee Referral?: ${data.referralHearAboutUs} 
+  Resume Filenames in S3: ${data.fileNames} 
+  Other Comments: ${data.comments} </p>`; // TODO: put html message here
+  const Subject = `New job application from ${data.firstName} ${data.lastName}`; // TODO: put subject message here
   const params = {
     TopicArn: process.env.topicArn,
     Message,
