@@ -73,17 +73,7 @@ async function _publish(id, data) {
     Other Comments: ${data.comments}`;
   }
 
-  // const Message = `New job application has been received from ${data.firstName} ${data.lastName}!
-
-  // Name: ${data.firstName} ${data.lastName}
-  // Email: ${data.email}
-  // Job Title(s): ${data.jobTitles.replace(',', ', ')}
-  // Other Job Titles?: ${data.otherJobTitle}
-  // How they heard about Case: ${data.hearAboutUs}, ${data.otherHearAboutUs}
-  // Employee Referral?: ${data.referralHearAboutUs}
-  // Resume Filenames in S3: ${data.fileNames}
-  // Other Comments: ${data.comments} `; // TODO: put html message here
-  const Subject = `New job application from ${data.firstName} ${data.lastName}`; // TODO: put subject message here
+  const Subject = `New job application from ${data.firstName} ${data.lastName}`;
   const params = {
     TopicArn: process.env.topicArn,
     Message,
