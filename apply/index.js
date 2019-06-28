@@ -125,7 +125,17 @@ async function handler(event) {
     };
   } catch (err) {
     console.error('ERROR:', err);
-    throw err;
+    console.log('Returning failure');
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': lib._allowedDomain(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Internal server error'
+      })
+    };
   }
 }
 

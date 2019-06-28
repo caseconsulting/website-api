@@ -151,22 +151,22 @@ describe('upload', () => {
 
   describe('handler', () => {
     let event;
+    beforeEach(() => {
+      event = {
+        pathParameters: { proxy: path }
+      };
+    });
+
+    beforeEach(() => spyOn(lib, '_createPresignedPost').and.returnValue(Promise.resolve(data)));
+
+    beforeEach(() => spyOn(lib, '_allowedDomain').and.returnValue('ALLOWED_DOMAIN'));
+    afterEach(() => expect(lib._allowedDomain).toHaveBeenCalled());
 
     describe('WHEN valid content type', () => {
-      beforeEach(() => {
-        event = {
-          pathParameters: { proxy: path }
-        };
-      });
-
       beforeEach(() => spyOn(lib, '_validateContentType').and.returnValue(true));
       afterEach(() => expect(lib._validateContentType).toHaveBeenCalledWith(event));
 
-      beforeEach(() => spyOn(lib, '_createPresignedPost').and.returnValue(Promise.resolve(data)));
       afterEach(() => expect(lib._createPresignedPost).toHaveBeenCalledWith(path));
-
-      beforeEach(() => spyOn(lib, '_allowedDomain').and.returnValue('ALLOWED_DOMAIN'));
-      afterEach(() => expect(lib._allowedDomain).toHaveBeenCalled());
 
       it('SHOULD return success', async () => {
         const result = await lib.handler(event);
@@ -179,5 +179,25 @@ describe('upload', () => {
         });
       });
     }); // WHEN valid content type
+
+    describe('WHEN invalid content type', () => {
+      beforeEach(() => spyOn(lib, '_validateContentType').and.returnValue(false));
+      afterEach(() => expect(lib._validateContentType).toHaveBeenCalledWith(event));
+
+      afterEach(() => expect(lib._createPresignedPost).not.toHaveBeenCalled());
+
+      it('SHOULD return error', async () => {
+        const result = await lib.handler(event);
+
+        expect(result.statusCode).toEqual(415);
+        expect(JSON.parse(result.body)).toEqual({
+          message: 'File type not allowed'
+        });
+        expect(result.headers).toEqual({
+          'Access-Control-Allow-Origin': 'ALLOWED_DOMAIN',
+          'Content-Type': 'application/json'
+        });
+      });
+    }); // WHEN invalid content type
   }); // handler
 });

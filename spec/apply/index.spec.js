@@ -126,7 +126,6 @@ describe('apply', () => {
     afterEach(() => expect(lib._putData).toHaveBeenCalledWith(jasmine.any(String), data));
 
     beforeEach(() => spyOn(lib, '_publish').and.returnValue({}));
-    afterEach(() => expect(lib._publish).toHaveBeenCalledWith(jasmine.any(String), data));
 
     beforeEach(() => spyOn(lib, '_allowedDomain').and.returnValue('ALLOWED_DOMAIN'));
     afterEach(() => expect(lib._allowedDomain).toHaveBeenCalled());
@@ -134,7 +133,9 @@ describe('apply', () => {
     describe('WHEN no error thrown', () => {
       beforeEach(() => spyOn(lib, '_putData').and.returnValue({}));
 
-      it('SHOULD return 200 success', async () => {
+      afterEach(() => expect(lib._publish).toHaveBeenCalledWith(jasmine.any(String), data));
+
+      it('SHOULD return success', async () => {
         const result = await lib.handler(event);
 
         expect(result.statusCode).toEqual(200);
@@ -147,18 +148,25 @@ describe('apply', () => {
           'Content-Type': 'application/json'
         });
       });
-    });
+    }); // WHEN no error thrown
 
     describe('WHEN error thrown', () => {
-      beforeEach(() => spyOn(lib, '_putData').and.returnValue(new Error('something')));
+      beforeEach(() => spyOn(lib, '_putData').and.returnValue(Promise.reject(new Error('something'))));
 
-      it('SHOULD rethrow error', async () => {
-        try {
-          await lib.handler(event);
-        } catch (err) {
-          expect(err.message).toEqual('something');
-        }
+      afterEach(() => expect(lib._publish).not.toHaveBeenCalled());
+
+      it('SHOULD return error', async () => {
+        const result = await lib.handler(event);
+
+        expect(result.statusCode).toEqual(500);
+        expect(JSON.parse(result.body)).toEqual({
+          message: 'Internal server error'
+        });
+        expect(result.headers).toEqual({
+          'Access-Control-Allow-Origin': 'ALLOWED_DOMAIN',
+          'Content-Type': 'application/json'
+        });
       });
-    });
+    }); // WHEN error thrown
   }); // handler
 });
