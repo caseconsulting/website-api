@@ -8,6 +8,7 @@ let lib;
 function _getDynamoDB() {
   return new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
 }
+
 function _getSNS() {
   return new AWS.SNS({ apiVersion: '2010-03-31' });
 }

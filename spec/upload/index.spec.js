@@ -43,11 +43,86 @@ describe('upload', () => {
   beforeAll(() => (process.env.clientDomain = clientDomain));
   beforeAll(() => (process.env.clientProtocol = clientProtocol));
 
-  xdescribe('_verifyContentType', () => {
-    // it('SHOULD return data', async () => {
-    //   expect(lib._verifyContentType()).toEqual(`${clientProtocol}://${clientDomain}`);
-    // });
-  }); // _verifyContentType
+  describe('_validateContentType', () => {
+    let event, contentType, parserObj;
+    beforeEach(() => (event = {}));
+
+    beforeEach(() => (parserObj = jasmine.createSpyObj('parser', ['parse'])));
+    beforeEach(() => spyOn(lib, '_getMultipartParser').and.returnValue(parserObj));
+    afterEach(() => expect(parserObj.parse).toHaveBeenCalledWith(event, false));
+
+    describe('WHEN gif', () => {
+      beforeEach(() => (contentType = 'image/gif'));
+      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+
+      it('SHOULD return true', async () => {
+        expect(lib._validateContentType(event)).toEqual(true);
+      });
+    }); // WHEN gif
+
+    // describe('WHEN jpeg', () => {
+    //   beforeEach(() => (contentType = 'image/jpeg'));
+    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+
+    //   it('SHOULD return true', async () => {
+    //     expect(lib._validateContentType(event)).toEqual(true);
+    //   });
+    // }); // WHEN jpeg
+
+    // describe('WHEN png', () => {
+    //   beforeEach(() => (contentType = 'image/png'));
+    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+
+    //   it('SHOULD return true', async () => {
+    //     expect(lib._validateContentType(event)).toEqual(true);
+    //   });
+    // }); // WHEN png
+
+    // describe('WHEN pdf', () => {
+    //   beforeEach(() => (contentType = 'application/pdf'));
+    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+
+    //   it('SHOULD return true', async () => {
+    //     expect(lib._validateContentType(event)).toEqual(true);
+    //   });
+    // }); // WHEN pdf
+
+    // describe('WHEN doc', () => {
+    //   beforeEach(() => (contentType = 'application/msword'));
+    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+
+    //   it('SHOULD return true', async () => {
+    //     expect(lib._validateContentType(event)).toEqual(true);
+    //   });
+    // }); // WHEN doc
+
+    // describe('WHEN docx', () => {
+    //   beforeEach(() => (contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'));
+    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+
+    //   it('SHOULD return true', async () => {
+    //     expect(lib._validateContentType(event)).toEqual(true);
+    //   });
+    // }); // WHEN docx
+
+    describe('WHEN other', () => {
+      beforeEach(() => (contentType = 'application/other'));
+      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+
+      it('SHOULD return false', async () => {
+        expect(lib._validateContentType(event)).toEqual(false);
+      });
+    }); // WHEN other
+
+    describe('WHEN unknown', () => {
+      beforeEach(() => (contentType = undefined));
+      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+
+      it('SHOULD return false', async () => {
+        expect(lib._validateContentType(event)).toEqual(false);
+      });
+    }); // WHEN unknown
+  }); // _validateContentType
 
   describe('_createResponse', () => {
     it('SHOULD return data', () => {
@@ -84,8 +159,8 @@ describe('upload', () => {
         };
       });
 
-      beforeEach(() => spyOn(lib, '_verifyContentType').and.returnValue(true));
-      afterEach(() => expect(lib._verifyContentType).toHaveBeenCalledWith(event));
+      beforeEach(() => spyOn(lib, '_validateContentType').and.returnValue(true));
+      afterEach(() => expect(lib._validateContentType).toHaveBeenCalledWith(event));
 
       beforeEach(() => spyOn(lib, '_createPresignedPost').and.returnValue(Promise.resolve(data)));
       afterEach(() => expect(lib._createPresignedPost).toHaveBeenCalledWith(path));

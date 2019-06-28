@@ -1,51 +1,31 @@
 const AWS = require('aws-sdk');
+const multipart = require('aws-lambda-multipart-parser');
 
 const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 
 let lib;
 
 // Content types that are allowed to be uploaded
-const ALLOWED_CONTENT_TYPES = ['image/gif'];
+const ALLOWED_CONTENT_TYPES = [
+  'image/gif'
+  // 'image/jpeg',
+  // 'image/png',
+  // 'application/pdf',
+  // 'application/msword',
+  // 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+];
 
 // Number of seconds to expire the pre-signed URL, default is 180 (3 minutes)
 const EXPIRES = 180;
 
-function _verifyContentType(event) {
-  const body = event.body;
-  const requestContentType = event.headers['content-type'];
-  const boundary = requestContentType.split('boundary=')[1];
-  let contentType;
+function _getMultipartParser() {
+  return multipart;
+}
 
-  // multipart/form-data boundaries begin with two hyphens
-  // https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2
-  const parts = body
-    .split('\r\n')
-    .join('')
-    .split(`--${boundary}`);
-  for (let i = 0; i < parts.length; i++) {
-    let part = parts[i];
-    console.log(`@@@ part: ${part}`);
-    if (part.includes('contentType')) {
-      let pieces = part
-        .split('\r\n')
-        .join('')
-        .split('"contentType"');
-      console.log(`@@@ pieces: ${pieces.join(';')}`);
-      contentType = pieces[1];
-      console.log(`@@@ contentType: ${contentType}`);
-
-      let filteredPart = part.replace('\r', '').replace('\n', '');
-      console.log(`@@@ filteredPart: ${filteredPart}`);
-      let match1 = filteredPart.match(/(?:\\"contentType\\")[a-zA-Z/]+/);
-      console.log(`@@@ match1: ${match1}`);
-      let match2 = filteredPart.match(/(?:"contentType")([a-zA-Z/])+/);
-      console.log(`@@@ match1: ${match2}`);
-    }
-    // will be:
-    // { filename: 'A.txt', type: 'text/plain',
-    //		data: <Buffer 41 41 41 41 42 42 42 42> }
-  }
-
+function _validateContentType(event) {
+  const body = lib._getMultipartParser().parse(event, false);
+  const contentType = body ? body.contentType : undefined;
+  console.log(`contentType: ${contentType}`);
   return lib.ALLOWED_CONTENT_TYPES.includes(contentType);
 }
 
@@ -108,7 +88,7 @@ async function handler(event) {
   const path = event.pathParameters.proxy;
   console.log(`Received request for ${path}`);
 
-  if (lib._verifyContentType(event)) {
+  if (lib._validateContentType(event)) {
     const data = await lib._createPresignedPost(path);
     console.log('Returning success');
 
@@ -138,7 +118,8 @@ lib = {
   ALLOWED_CONTENT_TYPES,
   EXPIRES,
 
-  _verifyContentType,
+  _getMultipartParser,
+  _validateContentType,
   _createResponse,
   _createPresignedPostPromise,
   _createPresignedPost,

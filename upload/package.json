@@ -4,7 +4,9 @@
   "private": true,
   "description": "Generates signed URLs to upload files to S3. This bypasses the API Gateway payload size limit of 10 MB.",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "aws-lambda-multipart-parser": "^0.1.3"
+  },
   "devDependencies": {
     "aws-sdk": "^2.482.0"
   }
