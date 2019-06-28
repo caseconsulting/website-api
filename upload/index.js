@@ -7,12 +7,12 @@ let lib;
 
 // Content types that are allowed to be uploaded
 const ALLOWED_CONTENT_TYPES = [
-  'image/gif'
-  // 'image/jpeg',
-  // 'image/png',
-  // 'application/pdf',
-  // 'application/msword',
-  // 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  'image/gif',
+  'image/jpeg',
+  'image/png',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 ];
 
 // Number of seconds to expire the pre-signed URL, default is 180 (3 minutes)

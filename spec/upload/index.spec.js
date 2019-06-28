@@ -60,50 +60,50 @@ describe('upload', () => {
       });
     }); // WHEN gif
 
-    // describe('WHEN jpeg', () => {
-    //   beforeEach(() => (contentType = 'image/jpeg'));
-    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+    describe('WHEN jpeg', () => {
+      beforeEach(() => (contentType = 'image/jpeg'));
+      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
 
-    //   it('SHOULD return true', async () => {
-    //     expect(lib._validateContentType(event)).toEqual(true);
-    //   });
-    // }); // WHEN jpeg
+      it('SHOULD return true', async () => {
+        expect(lib._validateContentType(event)).toEqual(true);
+      });
+    }); // WHEN jpeg
 
-    // describe('WHEN png', () => {
-    //   beforeEach(() => (contentType = 'image/png'));
-    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+    describe('WHEN png', () => {
+      beforeEach(() => (contentType = 'image/png'));
+      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
 
-    //   it('SHOULD return true', async () => {
-    //     expect(lib._validateContentType(event)).toEqual(true);
-    //   });
-    // }); // WHEN png
+      it('SHOULD return true', async () => {
+        expect(lib._validateContentType(event)).toEqual(true);
+      });
+    }); // WHEN png
 
-    // describe('WHEN pdf', () => {
-    //   beforeEach(() => (contentType = 'application/pdf'));
-    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+    describe('WHEN pdf', () => {
+      beforeEach(() => (contentType = 'application/pdf'));
+      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
 
-    //   it('SHOULD return true', async () => {
-    //     expect(lib._validateContentType(event)).toEqual(true);
-    //   });
-    // }); // WHEN pdf
+      it('SHOULD return true', async () => {
+        expect(lib._validateContentType(event)).toEqual(true);
+      });
+    }); // WHEN pdf
 
-    // describe('WHEN doc', () => {
-    //   beforeEach(() => (contentType = 'application/msword'));
-    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+    describe('WHEN doc', () => {
+      beforeEach(() => (contentType = 'application/msword'));
+      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
 
-    //   it('SHOULD return true', async () => {
-    //     expect(lib._validateContentType(event)).toEqual(true);
-    //   });
-    // }); // WHEN doc
+      it('SHOULD return true', async () => {
+        expect(lib._validateContentType(event)).toEqual(true);
+      });
+    }); // WHEN doc
 
-    // describe('WHEN docx', () => {
-    //   beforeEach(() => (contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'));
-    //   beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+    describe('WHEN docx', () => {
+      beforeEach(() => (contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'));
+      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
 
-    //   it('SHOULD return true', async () => {
-    //     expect(lib._validateContentType(event)).toEqual(true);
-    //   });
-    // }); // WHEN docx
+      it('SHOULD return true', async () => {
+        expect(lib._validateContentType(event)).toEqual(true);
+      });
+    }); // WHEN docx
 
     describe('WHEN other', () => {
       beforeEach(() => (contentType = 'application/other'));
