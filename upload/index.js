@@ -91,7 +91,6 @@ async function handler(event) {
   if (lib._validateContentType(event)) {
     const data = await lib._createPresignedPost(path);
     console.log('Returning success');
-
     return {
       statusCode: 200,
       headers: {
@@ -101,6 +100,7 @@ async function handler(event) {
       body: JSON.stringify(data)
     };
   } else {
+    console.log('Returning failure');
     return {
       statusCode: 415,
       headers: {
