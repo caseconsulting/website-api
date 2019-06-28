@@ -87,6 +87,12 @@ async function _publish(id, data) {
     .promise();
 }
 
+function _allowedDomain() {
+  const clientDomain = process.env.clientDomain;
+  const allowedDomain = clientDomain === '*' ? clientDomain : `${process.env.clientProtocol}://${clientDomain}`;
+  return allowedDomain;
+}
+
 async function handler(event) {
   try {
     console.log(`Received event: ${JSON.stringify(event)}`);
@@ -107,12 +113,11 @@ async function handler(event) {
       id,
       message: 'Submission was successful'
     };
-    const clientDomain = process.env.clientDomain;
-    const allowedDomain = clientDomain === '*' ? clientDomain : `${process.env.clientProtocol}://${clientDomain}`;
+
     return {
       statusCode: 200,
       headers: {
-        'Access-Control-Allow-Origin': allowedDomain,
+        'Access-Control-Allow-Origin': lib._allowedDomain(),
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(responseBody)
@@ -129,6 +134,7 @@ lib = {
   _parseData,
   _putData,
   _publish,
+  _allowedDomain,
 
   handler
 };

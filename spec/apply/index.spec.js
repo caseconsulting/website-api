@@ -109,6 +109,12 @@ describe('apply', () => {
     });
   }); // _putData
 
+  describe('_allowedDomain', () => {
+    it('SHOULD return data', async () => {
+      expect(lib._allowedDomain()).toEqual(`${clientProtocol}://${clientDomain}`);
+    });
+  }); // _allowedDomain
+
   describe('handler', () => {
     let event;
 
@@ -122,6 +128,9 @@ describe('apply', () => {
     beforeEach(() => spyOn(lib, '_publish').and.returnValue({}));
     afterEach(() => expect(lib._publish).toHaveBeenCalledWith(jasmine.any(String), data));
 
+    beforeEach(() => spyOn(lib, '_allowedDomain').and.returnValue('ALLOWED_DOMAIN'));
+    afterEach(() => expect(lib._allowedDomain).toHaveBeenCalled());
+
     describe('WHEN no error thrown', () => {
       beforeEach(() => spyOn(lib, '_putData').and.returnValue({}));
 
@@ -134,7 +143,7 @@ describe('apply', () => {
           message: 'Submission was successful'
         });
         expect(result.headers).toEqual({
-          'Access-Control-Allow-Origin': `${clientProtocol}://${clientDomain}`,
+          'Access-Control-Allow-Origin': 'ALLOWED_DOMAIN',
           'Content-Type': 'application/json'
         });
       });
