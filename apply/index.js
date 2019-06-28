@@ -44,6 +44,7 @@ async function _putData(id, data) {
     .put(params)
     .promise();
 }
+
 async function _publish(id, data) {
   let Message = '';
   Message += `New job application has been received from ${data.firstName} ${data.lastName}!
@@ -100,6 +101,7 @@ async function handler(event) {
 
     await lib._putData(id, data);
     await lib._publish(id, data);
+
     console.log('Returning success');
     const responseBody = {
       id,

@@ -43,6 +43,12 @@ describe('upload', () => {
   beforeAll(() => (process.env.clientDomain = clientDomain));
   beforeAll(() => (process.env.clientProtocol = clientProtocol));
 
+  xdescribe('_verifyContentType', () => {
+    // it('SHOULD return data', async () => {
+    //   expect(lib._verifyContentType()).toEqual(`${clientProtocol}://${clientDomain}`);
+    // });
+  }); // _verifyContentType
+
   describe('_createResponse', () => {
     it('SHOULD return data', () => {
       expect(lib._createResponse(presignedPost)).toEqual(data);
@@ -62,28 +68,41 @@ describe('upload', () => {
     });
   }); // _createPresignedPost
 
+  describe('_allowedDomain', () => {
+    it('SHOULD return data', async () => {
+      expect(lib._allowedDomain()).toEqual(`${clientProtocol}://${clientDomain}`);
+    });
+  }); // _allowedDomain
+
   describe('handler', () => {
     let event;
 
-    beforeEach(() => spyOn(lib, '_createPresignedPost').and.returnValue(Promise.resolve(data)));
-
-    beforeEach(() => {
-      event = {
-        pathParameters: { proxy: path }
-      };
-    });
-
-    afterEach(() => expect(lib._createPresignedPost).toHaveBeenCalledWith(path));
-
-    it('SHOULD return success', async () => {
-      const result = await lib.handler(event);
-
-      expect(result.statusCode).toEqual(200);
-      expect(JSON.parse(result.body)).toEqual(data);
-      expect(result.headers).toEqual({
-        'Access-Control-Allow-Origin': `${clientProtocol}://${clientDomain}`,
-        'Content-Type': 'application/json'
+    describe('WHEN valid content type', () => {
+      beforeEach(() => {
+        event = {
+          pathParameters: { proxy: path }
+        };
       });
-    });
+
+      beforeEach(() => spyOn(lib, '_verifyContentType').and.returnValue(true));
+      afterEach(() => expect(lib._verifyContentType).toHaveBeenCalledWith(event));
+
+      beforeEach(() => spyOn(lib, '_createPresignedPost').and.returnValue(Promise.resolve(data)));
+      afterEach(() => expect(lib._createPresignedPost).toHaveBeenCalledWith(path));
+
+      beforeEach(() => spyOn(lib, '_allowedDomain').and.returnValue('ALLOWED_DOMAIN'));
+      afterEach(() => expect(lib._allowedDomain).toHaveBeenCalled());
+
+      it('SHOULD return success', async () => {
+        const result = await lib.handler(event);
+
+        expect(result.statusCode).toEqual(200);
+        expect(JSON.parse(result.body)).toEqual(data);
+        expect(result.headers).toEqual({
+          'Access-Control-Allow-Origin': 'ALLOWED_DOMAIN',
+          'Content-Type': 'application/json'
+        });
+      });
+    }); // WHEN valid content type
   }); // handler
 });
