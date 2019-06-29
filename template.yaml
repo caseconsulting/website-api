@@ -66,6 +66,10 @@ Resources:
         - ''
         - - 'case-consulting-job-applications-'
           - !Ref Stage
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
