@@ -48,7 +48,7 @@ async function _putData(id, data) {
 
 async function _publish(id, data) {
   let Message = '';
-  Message += `New job application has been received from ${data.firstName} ${data.lastName}!
+  Message += `New job application has been received from ${data.firstName} ${data.lastName} !
 
     Name: ${data.firstName} ${data.lastName}
     Email: ${data.email}
