@@ -64,6 +64,8 @@ function _parseData(body) {
     throw new Error('Filename is required.');
   }
   if (!_.isEmpty(data)) data.submittedAt = moment().toISOString();
+  if (_.get(body, 'id')) data.id = body.id;
+
   return data;
 }
 
@@ -108,6 +110,14 @@ async function _publish(id, data) {
     Message += `
     Other Comments: ${data.comments}`;
   }
+  Message += `
+    
+    Links to Resume Files in S3:`;
+
+  data.fileNames.split(',').forEach(function(element) {
+    Message += `
+      https://s3.amazonaws.com/case-consulting-job-applications-test/${id}/${element}`;
+  });
 
   const Subject = `New job application from ${data.firstName} ${data.lastName}`;
   const params = {
