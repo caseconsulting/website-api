@@ -44,12 +44,12 @@ function _parseData(body) {
   if (_.get(body, 'email') && !_.isEmpty(body.email)) {
     data.email = body.email;
   } else {
-    throw new Error('Email is required');
+    throw new Error('Email is required.');
   }
   if (_.get(body, 'jobTitles') && !_.isEmpty(body.jobTitles)) {
     data.jobTitles = _.join(body.jobTitles);
   } else {
-    throw new Error('Job Title is required');
+    throw new Error('Job Title is required.');
   }
   if (_.get(body, 'otherJobTitle') && !_.isEmpty(body.otherJobTitle)) data.otherJobTitle = body.otherJobTitle;
   if (_.get(body, 'hearAboutUs') && !_.isEmpty(body.hearAboutUs)) data.hearAboutUs = _.join(body.hearAboutUs);
@@ -61,7 +61,7 @@ function _parseData(body) {
   if (_.get(body, 'fileNames') && !_.isEmpty(body.fileNames)) {
     data.fileNames = _.join(body.fileNames);
   } else {
-    throw new Error('Filename is required');
+    throw new Error('Filename is required.');
   }
   if (!_.isEmpty(data)) data.submittedAt = moment().toISOString();
   return data;
