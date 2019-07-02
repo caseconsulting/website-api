@@ -37,5 +37,8 @@
   "pre-commit": [
     "eslint",
     "test"
-  ]
+  ],
+  "dependencies": {
+    "aws-lambda-multipart-parser": "^0.1.3"
+  }
 }
