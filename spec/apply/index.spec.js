@@ -12,9 +12,9 @@ describe('apply', () => {
     firstName: 'firstName',
     lastName: 'lastName',
     email: 'email',
-    jobTitles: ['jobTitle1', 'jobTitle2'],
+    jobTitles: ['jobTitle1', 'jobTitle2', 'Other'],
     otherJobTitle: 'otherJobTitle',
-    hearAboutUs: ['where1'],
+    hearAboutUs: ['where1', 'Other', 'Employee Referral'],
     otherHearAboutUs: 'otherHearAboutUs',
     referralHearAboutUs: 'referralHearAboutUs',
     comments: 'comments',
@@ -148,25 +148,25 @@ describe('apply', () => {
       });
     });
 
-    describe('WHEN body doesnt contain other job title', () => {
-      beforeEach(() => (body = _.omit(data, ['otherJobTitle'])));
-      it('SHOULD return object with parsed data and no other job title', async () => {
-        const result = await lib._parseData(body);
-        const response = _.merge(_.omit(data, ['otherJobTitle', 'jobTitles', 'hearAboutUs', 'fileNames']), {
-          jobTitles: _.join(data.jobTitles),
-          hearAboutUs: _.join(data.hearAboutUs),
-          fileNames: _.join(data.fileNames),
-          submittedAt: jasmine.any(String)
+    describe('WHEN body requires other job title', () => {
+      describe('WHEN body doesnt contain other job title', () => {
+        beforeEach(() => (body = _.omit(data, ['otherJobTitle'])));
+        it('SHOULD throw an error', async () => {
+          try {
+            await lib._parseData(body);
+            fail('should not get here');
+          } catch (error) {
+            expect(error.message).toEqual('Other Job Title is required.');
+          }
         });
-        expect(result).toEqual(response);
       });
     });
-
+    
     describe('WHEN body doesnt contain hear about us', () => {
       beforeEach(() => (body = _.omit(data, ['hearAboutUs'])));
       it('SHOULD return object with parsed data and no hear about us', async () => {
         const result = await lib._parseData(body);
-        const response = _.merge(_.omit(data, ['jobTitles', 'hearAboutUs', 'fileNames']), {
+        const response = _.merge(_.omit(data, ['jobTitles', 'hearAboutUs', 'fileNames', 'otherHearAboutUs', 'referralHearAboutUs']), {
           jobTitles: _.join(data.jobTitles),
           fileNames: _.join(data.fileNames),
           submittedAt: jasmine.any(String)
@@ -175,33 +175,61 @@ describe('apply', () => {
       });
     });
 
-    describe('WHEN body doesnt contain referral hear about us', () => {
-      beforeEach(() => (body = _.omit(data, ['referralHearAboutUs'])));
-      it('SHOULD return object with parsed data and no referral hear about us', async () => {
-        const result = await lib._parseData(body);
-        const response = _.merge(_.omit(data, ['referralHearAboutUs', 'jobTitles', 'hearAboutUs', 'fileNames']), {
-          jobTitles: _.join(data.jobTitles),
-          hearAboutUs: _.join(data.hearAboutUs),
-          fileNames: _.join(data.fileNames),
-          submittedAt: jasmine.any(String)
+    describe('WHEN body requires other hear about us', () => {
+      describe('WHEN body doesnt contain other hear about us', () => {
+        beforeEach(() => (body = _.omit(data, ['otherHearAboutUs'])));
+        it('SHOULD throw an error', async () => {
+          try {
+            await lib._parseData(body);
+            fail('should not get here');
+          } catch (error) {
+            expect(error.message).toEqual('Other Hear About Us is required.');
+          }
         });
-        expect(result).toEqual(response);
       });
     });
 
-    describe('WHEN body doesnt contain other hear about us', () => {
-      beforeEach(() => (body = _.omit(data, ['otherHearAboutUs'])));
-      it('SHOULD return object with parsed data and no other hear about us', async () => {
-        const result = await lib._parseData(body);
-        const response = _.merge(_.omit(data, ['otherHearAboutUs', 'jobTitles', 'hearAboutUs', 'fileNames']), {
-          jobTitles: _.join(data.jobTitles),
-          hearAboutUs: _.join(data.hearAboutUs),
-          fileNames: _.join(data.fileNames),
-          submittedAt: jasmine.any(String)
+    describe('WHEN body requires referral hear about us', () => {
+      describe('WHEN body doesnt contain referral hear about us', () => {
+        beforeEach(() => (body = _.omit(data, ['referralHearAboutUs'])));
+        it('SHOULD throw an error', async () => {
+          try {
+            await lib._parseData(body);
+            fail('should not get here');
+          } catch (error) {
+            expect(error.message).toEqual('Employee Referral Hear About Us is required.');
+          }
         });
-        expect(result).toEqual(response);
       });
     });
+
+    // describe('WHEN body doesnt contain referral hear about us', () => {
+    //   beforeEach(() => (body = _.omit(data, ['referralHearAboutUs'])));
+    //   it('SHOULD return object with parsed data and no referral hear about us', async () => {
+    //     const result = await lib._parseData(body);
+    //     const response = _.merge(_.omit(data, ['referralHearAboutUs', 'jobTitles', 'hearAboutUs', 'fileNames']), {
+    //       jobTitles: _.join(data.jobTitles),
+    //       hearAboutUs: _.join(data.hearAboutUs),
+    //       fileNames: _.join(data.fileNames),
+    //       submittedAt: jasmine.any(String)
+    //     });
+    //     expect(result).toEqual(response);
+    //   });
+    // });
+
+    // describe('WHEN body doesnt contain other hear about us', () => {
+    //   beforeEach(() => (body = _.omit(data, ['otherHearAboutUs'])));
+    //   it('SHOULD return object with parsed data and no other hear about us', async () => {
+    //     const result = await lib._parseData(body);
+    //     const response = _.merge(_.omit(data, ['otherHearAboutUs', 'jobTitles', 'hearAboutUs', 'fileNames']), {
+    //       jobTitles: _.join(data.jobTitles),
+    //       hearAboutUs: _.join(data.hearAboutUs),
+    //       fileNames: _.join(data.fileNames),
+    //       submittedAt: jasmine.any(String)
+    //     });
+    //     expect(result).toEqual(response);
+    //   });
+    // });
 
     describe('WHEN body doesnt contain filename', () => {
       beforeEach(() => (body = _.omit(data, ['fileNames'])));

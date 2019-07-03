@@ -48,15 +48,36 @@ function _parseData(body) {
   }
   if (_.get(body, 'jobTitles') && !_.isEmpty(body.jobTitles)) {
     data.jobTitles = _.join(body.jobTitles);
+    if (body.jobTitles.includes('Other')) {
+      if (_.get(body, 'otherJobTitle') && !_.isEmpty(body.otherJobTitle)){
+        data.otherJobTitle = body.otherJobTitle;
+      } 
+      else {
+        throw new Error('Other Job Title is required.');
+      }
+    }
   } else {
     throw new Error('Job Title is required.');
   }
-  if (_.get(body, 'otherJobTitle') && !_.isEmpty(body.otherJobTitle)) data.otherJobTitle = body.otherJobTitle;
-  if (_.get(body, 'hearAboutUs') && !_.isEmpty(body.hearAboutUs)) data.hearAboutUs = _.join(body.hearAboutUs);
-  if (_.get(body, 'referralHearAboutUs') && !_.isEmpty(body.referralHearAboutUs))
-    data.referralHearAboutUs = body.referralHearAboutUs;
-  if (_.get(body, 'otherHearAboutUs') && !_.isEmpty(body.otherHearAboutUs))
-    data.otherHearAboutUs = body.otherHearAboutUs;
+  if (_.get(body, 'hearAboutUs') && !_.isEmpty(body.hearAboutUs)) {
+    data.hearAboutUs = _.join(body.hearAboutUs);
+    if (body.hearAboutUs.includes('Other')) {
+      if (_.get(body, 'otherHearAboutUs') && !_.isEmpty(body.otherHearAboutUs)) {
+        data.otherHearAboutUs = body.otherHearAboutUs;
+      } 
+      else {
+        throw new Error('Other Hear About Us is required.');
+      }
+    }
+    if (body.hearAboutUs.includes('Employee Referral')) {
+      if (_.get(body, 'referralHearAboutUs') && !_.isEmpty(body.referralHearAboutUs)) {
+        data.referralHearAboutUs = body.referralHearAboutUs;
+      } 
+      else {
+        throw new Error('Employee Referral Hear About Us is required.');
+      }
+    }
+  }
   if (_.get(body, 'comments') && !_.isEmpty(body.comments)) data.comments = body.comments;
   if (_.get(body, 'fileNames') && !_.isEmpty(body.fileNames)) {
     data.fileNames = _.join(body.fileNames);
