@@ -84,7 +84,8 @@ async function _putData(id, data) {
 
 async function _publish(id, data) {
   let Message = '';
-  Message += `New job application has been received from ${data.firstName} ${data.lastName} !
+  Message += `
+  New job application has been received from ${data.firstName} ${data.lastName} !
 
     Name: ${data.firstName} ${data.lastName}
     Email: ${data.email}
@@ -105,7 +106,7 @@ async function _publish(id, data) {
     Employee Referral?: ${data.referralHearAboutUs}`;
   }
   Message += `
-    Resume Filenames in S3: ${data.fileNames.replace(/,/g, ', ')}`;
+    Resume Filenames: ${data.fileNames.replace(/,/g, ', ')}`;
   if (data.comments) {
     Message += `
     Other Comments: ${data.comments}`;
@@ -116,7 +117,7 @@ async function _publish(id, data) {
 
   data.fileNames.split(',').forEach(function(element) {
     Message += `
-      https://s3.amazonaws.com/case-consulting-job-applications-test/${id}/${element}`;
+      https://s3.amazonaws.com/${process.env.bucket}/${id}/${element}`;
   });
 
   const Subject = `New job application from ${data.firstName} ${data.lastName}`;

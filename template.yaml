@@ -144,6 +144,7 @@ Resources:
           clientProtocol: !Ref ClientProtocol
           table: !Ref Table
           topicArn: !Ref Topic
+          bucket: !Ref Bucket
       Policies:
         - Statement:
             - Action:
@@ -161,6 +162,14 @@ Resources:
                 - Fn::Sub:
                     - arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${topicName}
                     - topicName: !GetAtt Topic.TopicName
+              Effect: Allow
+        - Statement:
+            - Action:
+                - sns:Publish
+              Resource:
+                - Fn::Sub:
+                    - arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${bucketName}
+                    - bucketName: !Ref Bucket
               Effect: Allow
   UploadFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
