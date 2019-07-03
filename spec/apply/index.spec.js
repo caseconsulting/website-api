@@ -166,7 +166,8 @@ describe('apply', () => {
       beforeEach(() => (body = _.omit(data, ['hearAboutUs'])));
       it('SHOULD return object with parsed data and no hear about us', async () => {
         const result = await lib._parseData(body);
-        const response = _.merge(_.omit(data, ['jobTitles', 'hearAboutUs', 'fileNames', 'otherHearAboutUs', 'referralHearAboutUs']), {
+        const response = _.merge(_.omit(data, ['jobTitles', 'hearAboutUs', 'fileNames', 
+          'otherHearAboutUs', 'referralHearAboutUs']), {
           jobTitles: _.join(data.jobTitles),
           fileNames: _.join(data.fileNames),
           submittedAt: jasmine.any(String)
