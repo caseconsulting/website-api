@@ -138,7 +138,7 @@ async function _publish(id, data) {
 
   data.fileNames.split(',').forEach(function(element) {
     Message += `
-      https://s3.amazonaws.com/${process.env.bucket}/${id}/${element}`;
+      https://s3.amazonaws.com/${process.env.bucket}/${id}/${element.replace(/ /g, '%2520')}`;
   });
 
   const Subject = `New job application from ${data.firstName} ${data.lastName}`;
