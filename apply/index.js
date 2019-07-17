@@ -34,10 +34,9 @@ function _parseData(body) {
   if (_.get(body, 'jobTitles') && !_.isEmpty(body.jobTitles)) {
     data.jobTitles = _.join(body.jobTitles);
     if (body.jobTitles.includes('Other')) {
-      if (_.get(body, 'otherJobTitle') && !_.isEmpty(body.otherJobTitle)){
+      if (_.get(body, 'otherJobTitle') && !_.isEmpty(body.otherJobTitle)) {
         data.otherJobTitle = body.otherJobTitle;
-      } 
-      else {
+      } else {
         throw new Error('Other Job Title is required.');
       }
     }
@@ -49,23 +48,25 @@ function _parseData(body) {
     if (body.hearAboutUs.includes('Other')) {
       if (_.get(body, 'otherHearAboutUs') && !_.isEmpty(body.otherHearAboutUs)) {
         data.otherHearAboutUs = body.otherHearAboutUs;
-      } 
-      else {
+      } else {
         throw new Error('Other Hear About Us is required.');
       }
     }
     if (body.hearAboutUs.includes('Employee Referral')) {
       if (_.get(body, 'referralHearAboutUs') && !_.isEmpty(body.referralHearAboutUs)) {
         data.referralHearAboutUs = body.referralHearAboutUs;
-      } 
-      else {
+      } else {
         throw new Error('Employee Referral Hear About Us is required.');
       }
     }
   }
   if (_.get(body, 'comments') && !_.isEmpty(body.comments)) data.comments = body.comments;
   if (_.get(body, 'fileNames') && !_.isEmpty(body.fileNames)) {
-    data.fileNames = _.join(body.fileNames);
+    if (body.fileNames.length == 1) {
+      data.fileNames = _.join(body.fileNames);
+    } else {
+      throw new Error('Can only upload 1 file');
+    }
   } else {
     throw new Error('Filename is required.');
   }
@@ -118,7 +119,7 @@ async function _publish(id, data) {
     Other Comments: ${data.comments}`;
   }
   Message += `
-    
+
     Links to Resume Files in S3:`;
 
   data.fileNames.split(',').forEach(function(element) {
