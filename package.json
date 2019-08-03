@@ -29,7 +29,7 @@
     "validate": "npm ls"
   },
   "devDependencies": {
-    "eslint": "^6.0.1",
+    "eslint": "^6.1.0",
     "jasmine": "^3.4.0",
     "nyc": "^14.1.1",
     "precommit-hook": "^3.0.0"

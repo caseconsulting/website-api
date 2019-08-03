@@ -123,7 +123,7 @@ We use `jasmine` for testing our code and it is already added in `package.json` 
 
 ```bash
 cd upload
-npm install
+npm ci
 npm run test
 ```
 

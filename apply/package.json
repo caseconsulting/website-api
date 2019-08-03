@@ -5,11 +5,11 @@
   "description": "Accepts 'Apply Now' submissions from website and stores data in DynamoDB table.",
   "main": "index.js",
   "dependencies": {
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "aws-sdk": "^2.482.0"
+    "aws-sdk": "^2.503.0"
   }
 }
