@@ -23,6 +23,9 @@ Parameters:
 Globals:
   Function:
     Runtime: nodejs12.x
+    Tags:
+      Application: website
+      Stage: !Ref Stage
 
   Api:
     # API Gateway endpoint type: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
@@ -88,6 +91,11 @@ Resources:
                     - !Ref ClientDomain
             Id: jobApplicationsPostCorsRule
             MaxAge: '180'
+      Tags:
+        - Key: Application
+          Value: website
+        - Key: Stage
+          Value: !Ref Stage
   Table:
     Type: AWS::DynamoDB::Table
     DeletionPolicy: Retain
@@ -114,6 +122,11 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+      Tags:
+        - Key: Application
+          Value: website
+        - Key: Stage
+          Value: !Ref Stage
   Topic:
     Type: AWS::SNS::Topic
     Properties:
@@ -125,6 +138,11 @@ Resources:
         - ''
         - - 'job-applications-'
           - !Ref Stage
+      Tags:
+        - Key: Application
+          Value: website
+        - Key: Stage
+          Value: !Ref Stage
   ApplyFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
