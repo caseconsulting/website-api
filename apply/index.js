@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 const _ = require('lodash');
 const moment = require('moment');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 let lib;
 
@@ -83,10 +83,7 @@ async function _putData(id, data) {
     Item
   };
   console.log(`PUT: ${JSON.stringify(params)}`);
-  return await lib
-    ._getDynamoDB()
-    .put(params)
-    .promise();
+  return await lib._getDynamoDB().put(params).promise();
 }
 
 async function _publish(id, data) {
@@ -122,7 +119,7 @@ async function _publish(id, data) {
 
     Links to Resume Files in S3:`;
 
-  data.fileNames.split(',').forEach(function(element) {
+  data.fileNames.split(',').forEach(function (element) {
     Message += `
       https://s3.amazonaws.com/${process.env.bucket}/${id}/${element.replace(/ /g, '%2520')}`;
   });
@@ -134,10 +131,7 @@ async function _publish(id, data) {
     Subject
   };
   console.log(`PUBLISH: ${JSON.stringify(params)}`);
-  return await lib
-    ._getSNS()
-    .publish(params)
-    .promise();
+  return await lib._getSNS().publish(params).promise();
 }
 
 function _allowedDomain() {
