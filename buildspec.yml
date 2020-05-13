@@ -1,8 +1,9 @@
-version: 0.2
+version: 0.3
 
 env:
   variables:
     BUCKET: 'case-consulting-website-code'
+    SAM_CLI_TELEMETRY: 0
 
 phases:
   install:
