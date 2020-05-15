@@ -1,6 +1,6 @@
 {
   "name": "website-api",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "private": true,
   "description": "Serverless back-end for Case Consulting website",
   "homepage": "https://www.consultwithcase.com/",
