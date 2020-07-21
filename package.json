@@ -22,6 +22,7 @@
     "package": "sam package --s3-bucket case-consulting-website-code --output-template-file packaged.yaml",
     "package:prod": "sam package --s3-bucket case-consulting-website-code-prod --output-template-file packaged.yaml --profile prod",
     "precommit": "npm run eslint && npm run test",
+    "reinstall": "npm ci && cd apply && npm ci && cd ../upload && npm ci",
     "tail:dev:apply": "sam logs -n ApplyFunction --stack-name website-api-dev --tail",
     "tail:dev:upload": "sam logs -n UploadFunction --stack-name website-api-dev --tail",
     "test": "jasmine",
