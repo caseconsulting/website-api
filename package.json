@@ -33,8 +33,8 @@
     "aws-lambda-multipart-parser": "^0.1.3"
   },
   "devDependencies": {
-    "aws-sdk": "^2.806.0",
-    "eslint": "^7.15.0",
+    "aws-sdk": "^2.820.0",
+    "eslint": "^7.16.0",
     "jasmine": "^3.6.3",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
