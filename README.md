@@ -211,3 +211,27 @@ sam logs -n UploadFunction --stack-name <REPLACE_WITH_YOUR_STACK_NAME> --tail
 ```
 
 **NOTE**: Alternatively this could be part of package.json scripts section.
+
+## Documentation
+
+**aws-lambda-multipart-parser**
+
+https://www.npmjs.com/package/aws-lambda-multipart-parser
+
+**AWS_SDK:**
+
+https://docs.aws.amazon.com/sdk-for-javascript/
+
+we're currently using version 2
+
+**Cloudformation:**
+
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+
+**Lodash:**
+
+https://lodash.com/
+
+**Moment:**
+
+https://momentjs.com/docs/
