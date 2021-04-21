@@ -129,7 +129,7 @@ If you do not have a **.backend--testing-env** file. Run the following command:
 npm run download:backend-testing:env
 ```
 
-In the **CloudFormation folder** you will see a **testLocalScript.js** file. This file contains a script that helps test Lambda functions locally.
+In the main directory there should be a **testLocalScript.js** file. This file contains a script that helps test Lambda functions locally.
 
 You can see all the current lambda function tests by running command:
 
