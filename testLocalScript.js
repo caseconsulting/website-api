@@ -1,4 +1,4 @@
-require('dotenv').config(); //sets up enviornment variables in .env file
+require('dotenv').config({ path: './.backend-testing-env' }); //sets up enviornment variables
 
 const fs = require('fs');
 
