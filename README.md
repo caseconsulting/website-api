@@ -3,6 +3,7 @@
 ```
 .
 ├── .aws-sam                    <-- Packaged SAM function [temporary]
+├── .backend-testing-env        <-- Enviornment file for testing lambda functions locally with testLocalScript.js [temporary]
 ├── apply                       <-- Source code for the apply Lambda function
 │   └── index.js                <-- Lambda function code
 │   └── package.json            <-- Lists Node.js module dependencies
@@ -120,15 +121,15 @@ You can find more information and examples about filtering Lambda function logs 
 
 ## Testing Lambda Functions Locally without Docker
 
-To test your Lambda function locally, first ensure that your .backend-env file is in the CloudFormation folder.
+To test your Lambda function locally, first ensure that your **.backend-testing-env** file is in the CloudFormation folder.
 
-If you do not have a .backend-env file. Run the following command:
+If you do not have a **.backend--testing-env** file. Run the following command:
 
 ```
+npm run download:backend-testing:env
 ```
 
 In the **CloudFormation folder** you will see a **testLocalScript.js** file. This file contains a script that helps test Lambda functions locally.
-
 
 You can see all the current lambda function tests by running command:
 
@@ -145,9 +146,10 @@ npm run testLambdaLocal {LambdaOption}
 Add a new test
 
 1. In **testLocalScript.js** file in the Lambdas section add a new object key in the **lambdas** JSON object.
-* For that new key create a JSON object with 2 key pairs: function and event.
-* **function** should be set to the pathTo the file location of the Lambda function you want to test
-* **event** should be set a String value with the value of the path location to the event file that you want to test against your Lambda function.
+
+- For that new key create a JSON object with 2 key pairs: function and event.
+- **function** should be set to the pathTo the file location of the Lambda function you want to test
+- **event** should be set a String value with the value of the path location to the event file that you want to test against your Lambda function.
 
 Example:
 
