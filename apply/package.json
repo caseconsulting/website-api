@@ -6,7 +6,7 @@
   "main": "index.js",
   "dependencies": {
     "aws-sdk": "^2.715.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "moment": "^2.27.0",
     "uuid": "^8.2.0"
   },
