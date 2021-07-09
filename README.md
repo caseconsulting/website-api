@@ -3,6 +3,7 @@
 ```
 .
 ├── .aws-sam                    <-- Packaged SAM function [temporary]
+├── .backend-testing-env        <-- Enviornment file for testing lambda functions locally with testLocalScript.js [temporary]
 ├── apply                       <-- Source code for the apply Lambda function
 │   └── index.js                <-- Lambda function code
 │   └── package.json            <-- Lists Node.js module dependencies
@@ -18,6 +19,7 @@
 ├── env.json                    <-- Environment vars used when functions are invoked locally
 ├── package.json                <-- Defines development and deployment scripts
 ├── packaged.yaml               <-- Packaged SAM template [temporary]
+├── testLocalScript.js          <-- Script to test Lambda functions locally without Docker
 ├── template.yaml               <-- SAM template
 ```
 
@@ -26,7 +28,7 @@
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) installed and configured with administrative privileges
 - [Install Docker](https://www.docker.com/community-edition)
 - [Install AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-- [Install NodeJS 8.12+](https://nodejs.org/en/download/releases/)
+- [Install NodeJS 12.x](https://nodejs.org/en/download/releases/)
 
 ## Setup process
 
@@ -117,13 +119,59 @@ sam logs -n UploadFunction --stack-name <REPLACE_WITH_YOUR_STACK_NAME> --tail
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
 
+## Testing Lambda Functions Locally without Docker
+
+To test your Lambda function locally, first ensure that your **.backend-testing-env** file is in the CloudFormation folder.
+
+If you do not have a **.backend--testing-env** file. Run the following command:
+
+```
+npm run download:backend-testing:env
+```
+
+In the main directory there should be a **testLocalScript.js** file. This file contains a script that helps test Lambda functions locally.
+
+You can see all the current lambda function tests by running command:
+
+```
+npm run testLambdaLocal
+```
+
+To test a specific lambda function run the command:
+
+```
+npm run testLambdaLocal {LambdaOption}
+```
+
+Add a new test
+
+1. In **testLocalScript.js** file in the Lambdas section add a new object key in the **lambdas** JSON object.
+
+- For that new key create a JSON object with 2 key pairs: function and event.
+- **function** should be set to the pathTo the file location of the Lambda function you want to test
+- **event** should be set a String value with the value of the path location to the event file that you want to test against your Lambda function.
+
+Example:
+
+```node.js
+const lambdas = {
+  template: { function: pathTo('lambda-template/app.js'), event: 'lambda-template/event.json' }
+};
+```
+
+To run the template example the command would be:
+
+```
+npm run testLambdaLocal template
+```
+
 ## Testing
 
 We use `jasmine` for testing our code and it is already added in `package.json` under `scripts`, so that we can simply run the following command to run our tests:
 
 ```bash
 cd upload
-npm install
+npm ci
 npm run test
 ```
 
@@ -211,3 +259,27 @@ sam logs -n UploadFunction --stack-name <REPLACE_WITH_YOUR_STACK_NAME> --tail
 ```
 
 **NOTE**: Alternatively this could be part of package.json scripts section.
+
+## Documentation
+
+**aws-lambda-multipart-parser**
+
+https://www.npmjs.com/package/aws-lambda-multipart-parser
+
+**AWS_SDK:**
+
+https://docs.aws.amazon.com/sdk-for-javascript/
+
+we're currently using version 2
+
+**Cloudformation:**
+
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+
+**Lodash:**
+
+https://lodash.com/
+
+**Moment:**
+
+https://momentjs.com/docs/

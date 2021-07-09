@@ -3,11 +3,12 @@ version: 0.2
 env:
   variables:
     BUCKET: 'case-consulting-website-code'
+    SAM_CLI_TELEMETRY: 0
 
 phases:
   install:
     runtime-versions:
-      nodejs: 10
+      nodejs: 12
     commands:
       - echo Entering install phase
       - apt-get update -y
@@ -17,7 +18,7 @@ phases:
       - pip --version
       - aws --version
       - pip install --user aws-sam-cli
-      - ~/.local/bin/sam --version
+      - sam --version
       - npm ci
       - (cd apply && npm ci)
       - (cd upload && npm ci)
@@ -32,7 +33,7 @@ phases:
   build:
     commands:
       - echo Entering build phase
-      - ~/.local/bin/sam build
+      - sam build
       - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file packaged.yaml
     finally:
       - echo Completed build
