@@ -36,9 +36,9 @@
     "dotenv": "^8.2.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.820.0",
+    "aws-sdk": "^2.1073.0",
     "eslint": "^7.16.0",
-    "jasmine": "^3.6.3",
+    "jasmine": "^3.99.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "nyc": "^15.1.0",
