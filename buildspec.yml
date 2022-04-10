@@ -8,7 +8,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 12
+      nodejs: 14
     commands:
       - echo Entering install phase
       - apt-get update -y
