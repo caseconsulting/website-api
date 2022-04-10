@@ -36,11 +36,11 @@
     "dotenv": "8.6.0"
   },
   "devDependencies": {
-    "aws-sdk": "2.1082.0",
-    "eslint": "8.10.0",
+    "aws-sdk": "2.1111.0",
+    "eslint": "8.13.0",
     "jasmine": "3.99.0",
     "lodash": "4.17.21",
-    "moment": "2.29.1",
+    "moment": "2.29.2",
     "nyc": "15.1.0",
     "precommit-hook": "3.0.0",
     "uuid": "8.3.2"
