@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    BUCKET: 'case-consulting-website-code'
+    BUCKET: 'case-website-code'
     SAM_CLI_TELEMETRY: 0
 
 phases:
