@@ -1,16 +1,18 @@
-const AWS = require('aws-sdk');
 const _ = require('lodash');
 const moment = require('moment');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
+const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
 const { v4: uuid } = require('uuid');
 
 let lib;
 
 function _getDynamoDB() {
-  return new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
+  return DynamoDBDocumentClient.from(new DynamoDBClient({ apiVersion: '2012-08-10' }));
 }
 
 function _getSNS() {
-  return new AWS.SNS({ apiVersion: '2010-03-31' });
+  return new SNSClient({ apiVersion: '2010-03-31' });
 }
 
 function _parseData(body) {
@@ -83,7 +85,7 @@ async function _putData(id, data) {
     Item
   };
   console.log(`PUT: ${JSON.stringify(params)}`);
-  return await lib._getDynamoDB().put(params).promise();
+  return await lib._getDynamoDB().send(new PutCommand(params));
 }
 
 async function _publish(id, data) {
@@ -131,7 +133,7 @@ async function _publish(id, data) {
     Subject
   };
   console.log(`PUBLISH: ${JSON.stringify(params)}`);
-  return await lib._getSNS().publish(params).promise();
+  return await lib._getSNS().send(new PublishCommand(params));
 }
 
 function _allowedDomain() {
