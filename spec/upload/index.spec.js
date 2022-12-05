@@ -11,12 +11,12 @@ describe('upload', () => {
   const params = {
     Bucket: bucketName,
     Expires: lib.EXPIRES,
+    Key: path,
     Fields: {
-      Key: path
+      acl: 'public-read-write',
+      success_action_status: '201'
     },
     Conditions: [
-      { acl: 'public-read-write' },
-      { success_action_status: '201' },
       ['starts-with', '$Content-Type', ''],
       ['starts-with', '$key', '']
     ]

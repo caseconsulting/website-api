@@ -194,7 +194,7 @@ lib = {
   _putData,
   _publish,
   _allowedDomain,
-
+  PutCommand,
   handler
 };
 
