@@ -28,7 +28,7 @@
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) installed and configured with administrative privileges
 - [Install Docker](https://www.docker.com/community-edition)
 - [Install AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-- [Install NodeJS 16.x](https://nodejs.org/en/download/releases/)
+- [Install NodeJS 18.x](https://nodejs.org/en/download/releases/)
 
 ## Setup process
 
