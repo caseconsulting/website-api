@@ -22,7 +22,7 @@ Parameters:
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Runtime: nodejs12.x
+    Runtime: nodejs18.x
     Tags:
       Application: website
       Stage: !Ref Stage
@@ -67,7 +67,7 @@ Resources:
     Properties:
       BucketName: !Join
         - ''
-        - - 'case-consulting-job-applications-'
+        - - 'case-job-applications-'
           - !Ref Stage
       BucketEncryption:
         ServerSideEncryptionConfiguration:

@@ -1,7 +1,8 @@
-const AWS = require('aws-sdk');
 const multipart = require('aws-lambda-multipart-parser');
+const { createPresignedPost } = require('@aws-sdk/s3-presigned-post');
+const { S3Client } = require('@aws-sdk/client-s3');
 
-const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+const s3 = new S3Client({});
 
 let lib;
 
@@ -48,23 +49,19 @@ function _createResponse(data) {
 // NOTE: See https://github.com/aws/aws-sdk-js/issues/1008#issuecomment-385502545
 //       S3 Get Signed URL (and Create Presigned Post) accept callback but not promise.
 async function _createPresignedPostPromise(params) {
-  return new Promise((resolve, reject) => {
-    return s3.createPresignedPost(params, (err, data) => {
-      err ? reject(err) : resolve(data);
-    });
-  });
+  return await createPresignedPost(s3, params);
 }
 
 async function _createPresignedPost(path) {
   const params = {
     Bucket: process.env.bucket,
     Expires: lib.EXPIRES,
+    Key: path,
     Fields: {
-      Key: path
+      acl: 'public-read-write',
+      success_action_status: '201'
     },
     Conditions: [
-      { acl: 'public-read-write' },
-      { success_action_status: '201' },
       ['starts-with', '$Content-Type', ''],
       ['starts-with', '$key', '']
     ]

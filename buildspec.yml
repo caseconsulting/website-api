@@ -2,13 +2,13 @@ version: 0.2
 
 env:
   variables:
-    BUCKET: 'case-consulting-website-code'
+    BUCKET: 'case-website-code'
     SAM_CLI_TELEMETRY: 0
 
 phases:
   install:
     runtime-versions:
-      nodejs: 12
+      nodejs: 16
     commands:
       - echo Entering install phase
       - apt-get update -y
