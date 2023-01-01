@@ -10,7 +10,7 @@
     "@aws-sdk/lib-dynamodb": "3.223.0",
     "aws-sdk": "2.1267.0",
     "lodash": "4.17.21",
-    "moment": "2.29.3",
+    "moment": "2.29.4",
     "uuid": "8.3.2"
   }
 }
