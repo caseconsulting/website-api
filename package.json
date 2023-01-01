@@ -40,7 +40,7 @@
     "eslint": "8.14.0",
     "jasmine": "3.99.0",
     "lodash": "4.17.21",
-    "moment": "2.29.3",
+    "moment": "2.29.4",
     "nyc": "15.1.0",
     "precommit-hook": "3.0.0",
     "uuid": "8.3.2"
