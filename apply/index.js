@@ -72,7 +72,7 @@ function _parseData(body) {
   } else {
     throw new Error('Filename is required.');
   }
-  if (!_.isEmpty(data)) data.submittedAt = dateUtils.getTodaysDate();
+  if (!_.isEmpty(data)) data.submittedAt = dateUtils.getTodaysDate('YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
   if (_.get(body, 'id')) data.id = body.id;
 
   return data;
