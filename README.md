@@ -280,6 +280,6 @@ https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-reso
 
 https://lodash.com/
 
-**Moment:**
+**DayJS:**
 
-https://momentjs.com/docs/
+https://day.js.org/docs/en/installation/installation
