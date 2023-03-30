@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const moment = require('moment');
+const dateUtils = require('./js/dateUtils');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
 const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
@@ -72,7 +72,7 @@ function _parseData(body) {
   } else {
     throw new Error('Filename is required.');
   }
-  if (!_.isEmpty(data)) data.submittedAt = moment().toISOString();
+  if (!_.isEmpty(data)) data.submittedAt = dateUtils.getTodaysDate();
   if (_.get(body, 'id')) data.id = body.id;
 
   return data;

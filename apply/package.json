@@ -9,8 +9,8 @@
     "@aws-sdk/client-sns": "3.223.0",
     "@aws-sdk/lib-dynamodb": "3.223.0",
     "aws-sdk": "2.1267.0",
+    "dayjs": "^1.11.7",
     "lodash": "4.17.21",
-    "moment": "2.29.4",
     "uuid": "8.3.2"
   }
 }
