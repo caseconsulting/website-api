@@ -1,9 +1,9 @@
 const _ = require('lodash');
 const dateUtils = require('./js/dateUtils');
+const crypto = require('crypto');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
 const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
-const { v4: uuid } = require('uuid');
 
 let lib;
 
@@ -149,7 +149,7 @@ async function handler(event) {
     const body = JSON.parse(event.body);
     console.log(`body: ${JSON.stringify(body)}`);
 
-    const id = uuid();
+    const id = crypto.randomUUID();
     console.log(`Generated ID: ${id}`);
 
     const data = lib._parseData(body);
