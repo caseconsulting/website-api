@@ -20,7 +20,7 @@
     "invoke:apply": "sam local invoke ApplyFunction --env-vars env.json --event events/apply.json",
     "invoke:upload": "sam local invoke UploadFunction --env-vars env.json --event events/upload.json",
     "lint": "npm run eslint",
-    "package": "sam package --s3-bucket case-website-code --output-template-file packaged.yaml",
+    "package": "sam package --s3-bucket case-consulting-website-code-dev --output-template-file packaged.yaml",
     "package:prod": "sam package --s3-bucket case-consulting-website-code-prod --output-template-file packaged.yaml --profile prod",
     "precommit": "npm run eslint && npm run test",
     "reinstall": "npm ci && cd apply && npm ci && cd ../upload && npm ci",
