@@ -1,9 +1,9 @@
 const _ = require('lodash');
-const moment = require('moment');
+const dateUtils = require('./js/dateUtils');
+const crypto = require('crypto');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
 const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
-const { v4: uuid } = require('uuid');
 
 let lib;
 
@@ -72,7 +72,7 @@ function _parseData(body) {
   } else {
     throw new Error('Filename is required.');
   }
-  if (!_.isEmpty(data)) data.submittedAt = moment().toISOString();
+  if (!_.isEmpty(data)) data.submittedAt = dateUtils.getTodaysDate('YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
   if (_.get(body, 'id')) data.id = body.id;
 
   return data;
@@ -122,8 +122,9 @@ async function _publish(id, data) {
     Links to Resume Files in S3:`;
 
   data.fileNames.split(',').forEach(function (element) {
+    // encode URI twice because amazon decided so
     Message += `
-      https://s3.amazonaws.com/${process.env.bucket}/${id}/${element.replace(/ /g, '%2520')}`;
+      https://${process.env.bucket}.s3.amazonaws.com/${id}/${encodeURIComponent(encodeURIComponent(element))}`;
   });
 
   const Subject = `New job application from ${data.firstName} ${data.lastName}`;
@@ -149,7 +150,7 @@ async function handler(event) {
     const body = JSON.parse(event.body);
     console.log(`body: ${JSON.stringify(body)}`);
 
-    const id = uuid();
+    const id = crypto.randomUUID();
     console.log(`Generated ID: ${id}`);
 
     const data = lib._parseData(body);

@@ -1,6 +1,6 @@
 {
   "name": "website-api",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "description": "Serverless back-end for Case Consulting website",
   "homepage": "https://www.consultwithcase.com/",
@@ -15,15 +15,20 @@
     "deploy:packaged:dev": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=dev ClientProtocol=http ClientDomain=localhost:8080 --stack-name website-api-dev --capabilities CAPABILITY_IAM --region us-east-1",
     "deploy:packaged:test": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=test ClientDomain=app-website.netlify.app --stack-name website-api-test --capabilities CAPABILITY_IAM --region us-east-1",
     "deploy:packaged:prod": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=prod ClientDomain=www.consultwithcase.com --stack-name website-api-prod --capabilities CAPABILITY_IAM --region us-east-1 --profile prod",
-    "download:backend-testing:env": "aws s3 cp s3://case-website-code/.backend-testing-env .backend-testing-env",
+    "download:backend-testing:env": "aws s3 cp s3://case-consulting-website-code-dev/.backend-testing-env .backend-testing-env",
     "eslint": "eslint . --ext .js --ignore-path .eslintignore --fix",
     "invoke:apply": "sam local invoke ApplyFunction --env-vars env.json --event events/apply.json",
     "invoke:upload": "sam local invoke UploadFunction --env-vars env.json --event events/upload.json",
     "lint": "npm run eslint",
-    "package": "sam package --s3-bucket case-website-code --output-template-file packaged.yaml",
+    "outdated": "npm outdated; npm run outdated:apply; npm run outdated:upload",
+    "outdated:apply": "cd apply && npm outdated",
+    "outdated:upload": "cd upload && npm outdated",
+    "package": "sam package --s3-bucket case-consulting-website-code-dev --output-template-file packaged.yaml",
     "package:prod": "sam package --s3-bucket case-consulting-website-code-prod --output-template-file packaged.yaml --profile prod",
-    "precommit": "npm run eslint && npm run test",
-    "reinstall": "npm ci && cd apply && npm ci && cd ../upload && npm ci",
+    "precommit": "npm run validate && npm run eslint && npm run test",
+    "reinstall": "npm ci && npm run reinstall:apply && npm run reinstall:upload",
+    "reinstall:apply": "cd apply && npm ci",
+    "reinstall:upload": "cd upload && npm ci",
     "tail:dev:apply": "sam logs -n ApplyFunction --stack-name website-api-dev --tail",
     "tail:dev:upload": "sam logs -n UploadFunction --stack-name website-api-dev --tail",
     "test": "jasmine",
@@ -31,21 +36,22 @@
     "testLambdaLocal": "node testLocalScript.js",
     "validate": "npm ls"
   },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "dependencies": {
-    "aws-lambda-multipart-parser": "0.1.3",
-    "aws-sdk": "2.1267.0",
-    "dotenv": "8.6.0"
+    "dotenv": "16.3.1"
   },
   "devDependencies": {
-    "eslint": "8.14.0",
-    "jasmine": "3.99.0",
+    "eslint": "8.55.0",
+    "jasmine": "5.1.0",
     "lodash": "4.17.21",
-    "moment": "2.29.3",
     "nyc": "15.1.0",
-    "precommit-hook": "3.0.0",
-    "uuid": "8.3.2"
+    "precommit-hook": "3.0.0"
   },
   "pre-commit": [
+    "validate",
     "eslint",
     "test"
   ]

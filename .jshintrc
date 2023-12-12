@@ -1,14 +1,10 @@
 {
-  "esversion": 9,
-  "jasmine": true,
-  "boss": true,
-  "eqeqeq": true,
-  "eqnull": true,
-  "expr": true,
-  "latedef": "nofunc",
-  "noarg": true,
-  "nonew": true,
+  "node": true,
+
+  "curly": true,
+  "latedef": true,
+  "quotmark": true,
   "undef": true,
   "unused": true,
-  "node": true
+  "trailing": true
 }

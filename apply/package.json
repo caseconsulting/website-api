@@ -4,13 +4,15 @@
   "private": true,
   "description": "Accepts 'Apply Now' submissions from website and stores data in DynamoDB table.",
   "main": "index.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.223.0",
-    "@aws-sdk/client-sns": "3.223.0",
-    "@aws-sdk/lib-dynamodb": "3.223.0",
-    "aws-sdk": "2.1267.0",
-    "lodash": "4.17.21",
-    "moment": "2.29.3",
-    "uuid": "8.3.2"
+    "@aws-sdk/client-dynamodb": "3.470.0",
+    "@aws-sdk/client-sns": "3.470.0",
+    "@aws-sdk/lib-dynamodb": "3.470.0",
+    "dayjs": "1.11.10",
+    "lodash": "4.17.21"
   }
 }

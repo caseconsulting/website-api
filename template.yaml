@@ -67,7 +67,7 @@ Resources:
     Properties:
       BucketName: !Join
         - ''
-        - - 'case-job-applications-'
+        - - 'case-consulting-job-applications-'
           - !Ref Stage
       BucketEncryption:
         ServerSideEncryptionConfiguration:
