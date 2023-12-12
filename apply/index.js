@@ -122,8 +122,9 @@ async function _publish(id, data) {
     Links to Resume Files in S3:`;
 
   data.fileNames.split(',').forEach(function (element) {
+    // encode URI twice because amazon decided so
     Message += `
-      https://s3.amazonaws.com/${process.env.bucket}/${id}/${element.replace(/ /g, '%2520')}`;
+      https://${process.env.bucket}.s3.amazonaws.com/${id}/${encodeURIComponent(encodeURIComponent(element))}`;
   });
 
   const Subject = `New job application from ${data.firstName} ${data.lastName}`;
