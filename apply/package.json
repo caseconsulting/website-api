@@ -5,8 +5,8 @@
   "description": "Accepts 'Apply Now' submissions from website and stores data in DynamoDB table.",
   "main": "index.js",
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=10.5.0"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.470.0",
