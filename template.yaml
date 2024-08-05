@@ -91,6 +91,11 @@ Resources:
                     - !Ref ClientDomain
             Id: jobApplicationsPostCorsRule
             MaxAge: '180'
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
       Tags:
         - Key: Application
           Value: website
@@ -122,6 +127,8 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
       Tags:
         - Key: Application
           Value: website
@@ -209,6 +216,36 @@ Resources:
                     - arn:${AWS::Partition}:s3:::${bucketName}/*
                     - bucketName: !Ref Bucket
               Effect: Allow
+  WorkableFunction:
+    DependsOn:
+      - Table
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Description: Reads a new DynamoDB job application stream record and writes a new applicant candidate using the Workable API
+      Handler: index.handler
+      Timeout: 5
+      CodeUri: workable/
+      Policies:
+        - Statement:
+            - Action:
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+                - dynamodb:ListStreams
+              Resource:
+                - Fn::Sub:
+                    - arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/stream/*
+                    - tableName: !Ref Table
+              Effect: Allow
+  WorkableEventMapping:
+    DependsOn:
+      - Table
+      - WorkableFunction
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      EventSourceArn: !GetAtt Table.StreamArn
+      FunctionName: !GetAtt WorkableFunction.Arn
+      StartingPosition: LATEST
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -220,6 +257,9 @@ Outputs:
   TableName:
     Description: 'Name of DynamoDB table used by Upload function'
     Value: !Ref Table
+  TableStream:
+    Description: 'Stream ARN of DynamoDB table used by Upload function'
+    Value: !GetAtt Table.StreamArn
   ApiEndpoint:
     Description: 'API Gateway endpoint URL for Prod stage'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
@@ -235,3 +275,6 @@ Outputs:
   UploadFunctionIamRole:
     Description: 'Implicit IAM Role created for Upload function'
     Value: !GetAtt UploadFunctionRole.Arn
+  WorkableFunction:
+    Description: 'Workable Function ARN'
+    Value: !GetAtt WorkableFunction.Arn
