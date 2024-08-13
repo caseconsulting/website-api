@@ -221,10 +221,13 @@ Resources:
       - Table
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Description: Reads a new DynamoDB job application stream record and writes a new applicant candidate using the Workable API
+      Description: Reads a new DynamoDB job application stream record and creates a new candidate using the Workable API
       Handler: index.handler
       Timeout: 5
       CodeUri: workable/
+      Environment:
+        Variables:
+          bucket: !Ref Bucket
       Policies:
         - Statement:
             - Action:
@@ -237,6 +240,11 @@ Resources:
                     - arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/stream/*
                     - tableName: !Ref Table
               Effect: Allow
+        - Statement:
+            - Action:
+                - ssm:GetParameter*
+              Effect: Allow
+              Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/Workable/AccessToken
   WorkableEventMapping:
     DependsOn:
       - Table
