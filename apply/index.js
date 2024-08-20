@@ -45,6 +45,11 @@ function _parseData(body) {
   } else {
     throw new Error('Job Title is required.');
   }
+  if (_.get(body, 'clearance') && !_.isEmpty(body.clearance)) {
+    data.clearance = body.clearance;
+  } else {
+    throw new Error('Clearance Level is required.');
+  }
   if (_.get(body, 'hearAboutUs') && !_.isEmpty(body.hearAboutUs)) {
     data.hearAboutUs = _.join(body.hearAboutUs);
     if (body.hearAboutUs.includes('Other')) {
@@ -100,6 +105,8 @@ async function _publish(id, data) {
     Message += `
     Other Job Titles: ${data.otherJobTitle}`;
   }
+  Message += `
+    Clearance: ${data.clearance}`;
   if (data.hearAboutUs && data.otherHearAboutUs) {
     Message += `
     How they heard about Case: ${data.hearAboutUs.replace(/,/g, ', ')}, ${data.otherHearAboutUs}`;

@@ -13,6 +13,7 @@ describe('apply', () => {
     lastName: 'lastName',
     email: 'email',
     jobTitles: ['jobTitle1', 'jobTitle2', 'Other'],
+    clearance: 'clearance',
     otherJobTitle: 'otherJobTitle',
     hearAboutUs: ['where1', 'Other', 'Employee Referral'],
     otherHearAboutUs: 'otherHearAboutUs',

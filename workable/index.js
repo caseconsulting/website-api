@@ -2,10 +2,13 @@ let lib;
 const _ = require('lodash');
 const axios = require('axios');
 const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
+const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
+
 const ssmClient = new SSMClient({ region: 'us-east-1' });
+const sesClient = new SESClient({ region: 'us-east-1' });
 
 const SUB_DOMAIN = 'case-consulting';
-const MEMBER_ID = '191bc0'; // Chad's member ID for commenting on candidates
+const MEMBER_ID = '180e14'; // Caty's member ID for commenting on candidates
 const BUCKET = process.env.bucket;
 
 const LESS_COMMON_LCATS_SHORTCODE = 'C1B881D920';
@@ -42,8 +45,7 @@ function _buildWorkableCandidate(jobApplication) {
     headline: jobApplication.jobTitles?.split(',')?.join(', '),
     resume_url: lib._getResumeURL(jobApplication.id, jobApplication.fileNames),
     domain: 'applied',
-    stage: 'Applied',
-    sourced: false
+    stage: 'applied'
   };
 } // _buildWorkableCandidate
 
@@ -53,7 +55,7 @@ function _buildWorkableCandidateComment(jobApplication) {
   _.forEach(jobApplication, (value, key) => {
     comment += `${key}: ${value}\n`;
   });
-  return { comment: comment.trim(), member_id: MEMBER_ID };
+  return comment.trim();
 } // _buildWorkableCandidateComment
 
 /**
@@ -78,24 +80,34 @@ async function _createCandidate(candidate, jobShortcode, token) {
       Accept: 'text/plain',
       'Content-Type': 'application/json'
     },
-    data: candidate
+    data: { candidate, sourced: false }
   };
   return await axios(options);
 } // _createCandidate
 
 async function _createCandidateComment(workableCandidate, comment, token) {
-  let candidateId = workableCandidate?.id;
-  let options = {
-    method: 'POST',
-    url: `https://${SUB_DOMAIN}.workable.com/spi/v3/candidates/${candidateId}/comments`,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'text/plain',
-      'Content-Type': 'application/json'
-    },
-    data: comment
-  };
-  return await axios(options);
+  // waits 20 seconds to allow Workable api to be able to detect the newly created candidate
+  return new Promise((resolve, reject) =>
+    setTimeout(async () => {
+      try {
+        let candidateId = workableCandidate?.id;
+        let options = {
+          method: 'POST',
+          url: `https://${SUB_DOMAIN}.workable.com/spi/v3/candidates/${candidateId}/comments`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'text/plain',
+            'Content-Type': 'application/json'
+          },
+          data: { member_id: MEMBER_ID, comment: { body: comment } }
+        };
+        let resp = await axios(options);
+        resolve(resp);
+      } catch (err) {
+        reject(err);
+      }
+    }, 20000)
+  );
 }
 
 function _getCandidateSummary(jobApplication) {
@@ -134,7 +146,43 @@ async function _getSecret(secretName) {
   return result.Parameter.Value;
 } // _getSecret
 
+async function _sendFailureEmail(err, jobApplication) {
+  try {
+    const source = process.env.sourceEmail;
+    const destination = process.env.destinationEmail;
+    if (source && destination) {
+      const input = {
+        Source: source,
+        Destination: {
+          ToAddresses: destination.split(',')
+        },
+        Message: {
+          Body: {
+            Text: {
+              Charset: 'UTF-8',
+              Data:
+                `Error: ${JSON.stringify(err)}\n\n` +
+                `Job Application:\n${lib._getCandidateSummary(jobApplication)}\n\n` +
+                `Candidate Resume: ${lib._getResumeURL(jobApplication.id, jobApplication.fileNames)}`
+            }
+          },
+          Subject: {
+            Charset: 'UTF-8',
+            Data: 'Failed to create Workable candidate from CASE website job application'
+          }
+        }
+      };
+      const command = new SendEmailCommand(input);
+      await sesClient.send(command);
+    }
+  } catch (err) {
+    console.error('EMAIL ERROR: ', err);
+    console.log('Failed to send failure email.');
+  }
+}
+
 async function handler(event) {
+  let jobApplication;
   try {
     console.log(`Received event: ${JSON.stringify(event)}`);
 
@@ -143,7 +191,7 @@ async function handler(event) {
 
     let dynamoRecord = event?.Records?.[0]?.dynamodb?.NewImage || {};
 
-    let jobApplication = lib._cleanJobApplicationData(dynamoRecord);
+    jobApplication = lib._cleanJobApplicationData(dynamoRecord);
 
     let candidate = lib._buildWorkableCandidate(jobApplication);
 
@@ -163,6 +211,7 @@ async function handler(event) {
       body: 'Successfully created a Workable candidate from job application submitted via CASE website'
     };
   } catch (err) {
+    await lib._sendFailureEmail(err, jobApplication);
     console.error('ERROR: ', err);
     console.log('Returning failure');
   }
@@ -178,6 +227,7 @@ lib = {
   _getResumeURL,
   _getWorkableJobShortcode,
   _getSecret,
+  _sendFailureEmail,
   handler
 };
 

@@ -11,6 +11,10 @@ Parameters:
     Type: String
     Description: Client protocol used when configuring CORS for S3 bucket
     Default: 'https'
+  DestinationEmail:
+    Type: String
+    Description: Destination email address to send Workable internal error failure reason
+    Default: '*'
   Stage:
     Type: String
     Description: 'Deployment environment (e.g., dev, test, or prod)'
@@ -223,11 +227,13 @@ Resources:
     Properties:
       Description: Reads a new DynamoDB job application stream record and creates a new candidate using the Workable API
       Handler: index.handler
-      Timeout: 5
+      Timeout: 120
       CodeUri: workable/
       Environment:
         Variables:
           bucket: !Ref Bucket
+          sourceEmail: resumes@consultwithcase.com
+          destinationEmail: !Ref DestinationEmail
       Policies:
         - Statement:
             - Action:
@@ -245,6 +251,11 @@ Resources:
                 - ssm:GetParameter*
               Effect: Allow
               Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/Workable/AccessToken
+        - Statement:
+            - Action:
+                - ses:SendEmail
+              Effect: Allow
+              Resource: '*'
   WorkableEventMapping:
     DependsOn:
       - Table
