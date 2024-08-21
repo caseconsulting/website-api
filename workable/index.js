@@ -37,6 +37,11 @@ const CASE_JOBS_MAP = {
   }
 };
 
+/**
+ * Builds the required fields needed to successfully submit a candidate to Workable's API.
+ *
+ * @returns Object - The candidate to create
+ */
 function _buildWorkableCandidate(jobApplication) {
   return {
     firstname: jobApplication.firstName,
@@ -49,6 +54,11 @@ function _buildWorkableCandidate(jobApplication) {
   };
 } // _buildWorkableCandidate
 
+/**
+ * Builds the Workable Candidate comment from the job application submitted on the CASE website.
+ *
+ * @returns String - The comment to attach to the candidate
+ */
 function _buildWorkableCandidateComment(jobApplication) {
   let comment = 'Candidate generated through Workable API, originally submitted via CASE website.\n';
   comment += '\nJob application details:\n';
@@ -71,6 +81,11 @@ function _cleanJobApplicationData(jobApplicationRecord) {
   return jobApplication;
 } // _cleanJobApplicationData
 
+/**
+ * Creates a candidate from the CASE website job application using the Workable API.
+ *
+ * @returns Object - Workable's API response to the created candidate
+ */
 async function _createCandidate(candidate, jobShortcode, token) {
   let options = {
     method: 'POST',
@@ -85,6 +100,12 @@ async function _createCandidate(candidate, jobShortcode, token) {
   return await axios(options);
 } // _createCandidate
 
+/**
+ * Creates a comment for the newly created candidate. This has to wait a little since
+ * Workable's system takes a little to process the candidate.
+ *
+ * @returns Object - Workable's API response to the created comment
+ */
 async function _createCandidateComment(workableCandidate, comment, token) {
   // waits 20 seconds to allow Workable api to be able to detect the newly created candidate
   return new Promise((resolve, reject) =>
@@ -108,8 +129,13 @@ async function _createCandidateComment(workableCandidate, comment, token) {
       }
     }, 20000)
   );
-}
+} // _createCandidateComment
 
+/**
+ * Formats the website job application object to a readable string.
+ *
+ * @returns String - The job application in readable format
+ */
 function _getCandidateSummary(jobApplication) {
   let summary = '';
   _.forEach(jobApplication, (value, key) => {
@@ -118,10 +144,20 @@ function _getCandidateSummary(jobApplication) {
   return summary;
 } // _getCandidateSummary
 
+/**
+ * Gets the link of the job application resume from AWS S3
+ *
+ * @returns String - The link to the job application resume
+ */
 function _getResumeURL(jobApplicationId, fileName) {
   return `https://${BUCKET}.s3.amazonaws.com/${jobApplicationId}/${encodeURIComponent(encodeURIComponent(fileName))}`;
 } // _getResumeURL
 
+/**
+ * Gets the Workable job code based on the job application job title.
+ *
+ * @returns String - The Workable job shortcode
+ */
 function _getWorkableJobShortcode(jobApplication) {
   let shortcode;
   let clearance = jobApplication.clearance;
@@ -146,6 +182,10 @@ async function _getSecret(secretName) {
   return result.Parameter.Value;
 } // _getSecret
 
+/**
+ * Sends an AWS SES email that an error has occurred somewhere in the process
+ * of creating a Workable candidate or comment.
+ */
 async function _sendFailureEmail(err, jobApplication) {
   try {
     const source = process.env.sourceEmail;
@@ -179,8 +219,13 @@ async function _sendFailureEmail(err, jobApplication) {
     console.error('EMAIL ERROR: ', err);
     console.log('Failed to send failure email.');
   }
-}
+} // _sendFailureEmail
 
+/**
+ * The entry point for the Lambda function.
+ *
+ * @returns Object - the functions response
+ */
 async function handler(event) {
   let jobApplication;
   try {
