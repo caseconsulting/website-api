@@ -12,23 +12,25 @@
     "deploy:dev": "npm run build && npm run package && npm run deploy:packaged:dev",
     "deploy:test": "npm run build && npm run package && npm run deploy:packaged:test",
     "deploy:prod": "npm run build && npm run package:prod && npm run deploy:packaged:prod",
-    "deploy:packaged:dev": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=dev ClientProtocol=http ClientDomain=localhost:8080 --stack-name website-api-dev --capabilities CAPABILITY_IAM --region us-east-1",
+    "deploy:packaged:dev": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=dev ClientProtocol=http ClientDomain=localhost:8080 DestinationEmail=cmartin@consultwithcase.com --stack-name website-api-dev --capabilities CAPABILITY_IAM --region us-east-1",
     "deploy:packaged:test": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=test ClientDomain=app-website.netlify.app --stack-name website-api-test --capabilities CAPABILITY_IAM --region us-east-1",
-    "deploy:packaged:prod": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=prod ClientDomain=www.consultwithcase.com --stack-name website-api-prod --capabilities CAPABILITY_IAM --region us-east-1 --profile prod",
+    "deploy:packaged:prod": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=prod ClientDomain=www.consultwithcase.com DestinationEmail=afarmer@consultwithcase.com,cmartin@consultwithcase.com --stack-name website-api-prod --capabilities CAPABILITY_IAM --region us-east-1 --profile prod",
     "download:backend-testing:env": "aws s3 cp s3://case-consulting-website-code-dev/.backend-testing-env .backend-testing-env",
     "eslint": "eslint . --ext .js --ignore-path .eslintignore --fix",
     "invoke:apply": "sam local invoke ApplyFunction --env-vars env.json --event events/apply.json",
     "invoke:upload": "sam local invoke UploadFunction --env-vars env.json --event events/upload.json",
     "lint": "npm run eslint",
-    "outdated": "npm outdated; npm run outdated:apply; npm run outdated:upload",
+    "outdated": "npm outdated; npm run outdated:apply; npm run outdated:upload; npm run outdated:workable",
     "outdated:apply": "cd apply && npm outdated",
     "outdated:upload": "cd upload && npm outdated",
+    "outdated:workable": "cd workable && npm outdated",
     "package": "sam package --s3-bucket case-consulting-website-code-dev --output-template-file packaged.yaml",
     "package:prod": "sam package --s3-bucket case-consulting-website-code-prod --output-template-file packaged.yaml --profile prod",
     "precommit": "npm run validate && npm run eslint && npm run test",
-    "reinstall": "npm ci && npm run reinstall:apply && npm run reinstall:upload",
-    "reinstall:apply": "cd apply && npm ci",
-    "reinstall:upload": "cd upload && npm ci",
+    "reinstall": "npm install && npm ci && npm run reinstall:apply && npm run reinstall:upload && npm run reinstall:workable",
+    "reinstall:apply": "cd apply && npm install && npm ci",
+    "reinstall:upload": "cd upload && npm install && npm ci",
+    "reinstall:workable": "cd workable && npm install && npm ci",
     "tail:dev:apply": "sam logs -n ApplyFunction --stack-name website-api-dev --tail",
     "tail:dev:upload": "sam logs -n UploadFunction --stack-name website-api-dev --tail",
     "test": "jasmine",
@@ -37,17 +39,17 @@
     "validate": "npm ls"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=10.5.0"
   },
   "dependencies": {
-    "dotenv": "16.3.1"
+    "dotenv": "16.4.5"
   },
   "devDependencies": {
-    "eslint": "8.55.0",
-    "jasmine": "5.1.0",
+    "eslint": "8.57.0",
+    "jasmine": "5.2.0",
     "lodash": "4.17.21",
-    "nyc": "15.1.0",
+    "nyc": "17.0.0",
     "precommit-hook": "3.0.0"
   },
   "pre-commit": [

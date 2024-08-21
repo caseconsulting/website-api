@@ -51,33 +51,6 @@ describe('upload', () => {
     beforeEach(() => spyOn(lib, '_getMultipartParser').and.returnValue(parserObj));
     afterEach(() => expect(parserObj.parse).toHaveBeenCalledWith(event, false));
 
-    describe('WHEN gif', () => {
-      beforeEach(() => (contentType = 'image/gif'));
-      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
-
-      it('SHOULD return true', async () => {
-        expect(lib._validateContentType(event)).toEqual(true);
-      });
-    }); // WHEN gif
-
-    describe('WHEN jpeg', () => {
-      beforeEach(() => (contentType = 'image/jpeg'));
-      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
-
-      it('SHOULD return true', async () => {
-        expect(lib._validateContentType(event)).toEqual(true);
-      });
-    }); // WHEN jpeg
-
-    describe('WHEN png', () => {
-      beforeEach(() => (contentType = 'image/png'));
-      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
-
-      it('SHOULD return true', async () => {
-        expect(lib._validateContentType(event)).toEqual(true);
-      });
-    }); // WHEN png
-
     describe('WHEN pdf', () => {
       beforeEach(() => (contentType = 'application/pdf'));
       beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
@@ -98,6 +71,15 @@ describe('upload', () => {
 
     describe('WHEN docx', () => {
       beforeEach(() => (contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'));
+      beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
+
+      it('SHOULD return true', async () => {
+        expect(lib._validateContentType(event)).toEqual(true);
+      });
+    }); // WHEN docx
+
+    describe('WHEN rtf', () => {
+      beforeEach(() => (contentType = 'application/rtf'));
       beforeEach(() => parserObj.parse.and.returnValue({ contentType }));
 
       it('SHOULD return true', async () => {
