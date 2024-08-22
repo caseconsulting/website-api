@@ -234,6 +234,7 @@ Resources:
           bucket: !Ref Bucket
           sourceEmail: resumes@consultwithcase.com
           destinationEmail: !Ref DestinationEmail
+          stage: !Ref Stage
       Policies:
         - Statement:
             - Action:

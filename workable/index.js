@@ -10,6 +10,7 @@ const sesClient = new SESClient({ region: 'us-east-1' });
 const SUB_DOMAIN = 'case-consulting';
 const MEMBER_ID = '180e14'; // Caty's member ID for commenting on candidates
 const BUCKET = process.env.bucket;
+const STAGE = process.env.stage;
 
 const LESS_COMMON_LCATS_SHORTCODE = 'C1B881D920';
 const CI_CANDIDATES_SHORTCODE = '837457E467';
@@ -231,25 +232,28 @@ async function handler(event) {
   try {
     console.log(`Received event: ${JSON.stringify(event)}`);
 
-    let token = await lib._getSecret('/Workable/AccessToken');
-    console.log('Successfully retrieved Workable access token');
+    // only create candidates on production environment
+    if (STAGE === 'prod') {
+      let token = await lib._getSecret('/Workable/AccessToken');
+      console.log('Successfully retrieved Workable access token');
 
-    let dynamoRecord = event?.Records?.[0]?.dynamodb?.NewImage || {};
+      let dynamoRecord = event?.Records?.[0]?.dynamodb?.NewImage || {};
 
-    jobApplication = lib._cleanJobApplicationData(dynamoRecord);
+      jobApplication = lib._cleanJobApplicationData(dynamoRecord);
 
-    let candidate = lib._buildWorkableCandidate(jobApplication);
+      let candidate = lib._buildWorkableCandidate(jobApplication);
 
-    let jobShortcode = lib._getWorkableJobShortcode(jobApplication);
+      let jobShortcode = lib._getWorkableJobShortcode(jobApplication);
 
-    let candidateResponse = await lib._createCandidate(candidate, jobShortcode, token);
-    console.log('Successfully created a Workable candidate');
+      let candidateResponse = await lib._createCandidate(candidate, jobShortcode, token);
+      console.log('Successfully created a Workable candidate');
 
-    let workableCandidate = candidateResponse.data.candidate;
-    let comment = lib._buildWorkableCandidateComment(jobApplication);
+      let workableCandidate = candidateResponse.data.candidate;
+      let comment = lib._buildWorkableCandidateComment(jobApplication);
 
-    await lib._createCandidateComment(workableCandidate, comment, token);
-    console.log('Successfully created a Workable comment for candidate ID: ' + workableCandidate.id);
+      await lib._createCandidateComment(workableCandidate, comment, token);
+      console.log('Successfully created a Workable comment for candidate ID: ' + workableCandidate.id);
+    }
 
     return {
       statusCode: 200,
