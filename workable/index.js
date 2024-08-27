@@ -10,10 +10,15 @@ const sesClient = new SESClient({ region: 'us-east-1' });
 const SUB_DOMAIN = 'case-consulting';
 const MEMBER_ID = '180e14'; // Caty's member ID for commenting on candidates
 const BUCKET = process.env.bucket;
+const STAGE = process.env.stage;
 
 const LESS_COMMON_LCATS_SHORTCODE = 'C1B881D920';
 const CI_CANDIDATES_SHORTCODE = '837457E467';
 const INTERN_SHORTCODE = 'E0209C3651';
+
+const AMY_AT = 'amy_farmer';
+const CATY_AT = 'caty_vincent';
+const ALISSA_AT = 'alissa_bendele';
 
 // Maps the job title from the CASE application to the Workable short code
 const CASE_JOBS_MAP = {
@@ -60,7 +65,8 @@ function _buildWorkableCandidate(jobApplication) {
  * @returns String - The comment to attach to the candidate
  */
 function _buildWorkableCandidateComment(jobApplication) {
-  let comment = 'Candidate generated through Workable API, originally submitted via CASE website.\n';
+  let comment = `@${AMY_AT} @${CATY_AT} @${ALISSA_AT}\n`;
+  comment += 'Candidate generated through Workable API, originally submitted via CASE website.\n';
   comment += '\nJob application details:\n';
   _.forEach(jobApplication, (value, key) => {
     comment += `${key}: ${value}\n`;
@@ -127,7 +133,7 @@ async function _createCandidateComment(workableCandidate, comment, token) {
       } catch (err) {
         reject(err);
       }
-    }, 20000)
+    }, 40000)
   );
 } // _createCandidateComment
 
@@ -231,25 +237,28 @@ async function handler(event) {
   try {
     console.log(`Received event: ${JSON.stringify(event)}`);
 
-    let token = await lib._getSecret('/Workable/AccessToken');
-    console.log('Successfully retrieved Workable access token');
+    // only create candidates on production environment
+    if (STAGE === 'prod') {
+      let token = await lib._getSecret('/Workable/AccessToken');
+      console.log('Successfully retrieved Workable access token');
 
-    let dynamoRecord = event?.Records?.[0]?.dynamodb?.NewImage || {};
+      let dynamoRecord = event?.Records?.[0]?.dynamodb?.NewImage || {};
 
-    jobApplication = lib._cleanJobApplicationData(dynamoRecord);
+      jobApplication = lib._cleanJobApplicationData(dynamoRecord);
 
-    let candidate = lib._buildWorkableCandidate(jobApplication);
+      let candidate = lib._buildWorkableCandidate(jobApplication);
 
-    let jobShortcode = lib._getWorkableJobShortcode(jobApplication);
+      let jobShortcode = lib._getWorkableJobShortcode(jobApplication);
 
-    let candidateResponse = await lib._createCandidate(candidate, jobShortcode, token);
-    console.log('Successfully created a Workable candidate');
+      let candidateResponse = await lib._createCandidate(candidate, jobShortcode, token);
+      console.log('Successfully created a Workable candidate');
 
-    let workableCandidate = candidateResponse.data.candidate;
-    let comment = lib._buildWorkableCandidateComment(jobApplication);
+      let workableCandidate = candidateResponse.data.candidate;
+      let comment = lib._buildWorkableCandidateComment(jobApplication);
 
-    await lib._createCandidateComment(workableCandidate, comment, token);
-    console.log('Successfully created a Workable comment for candidate ID: ' + workableCandidate.id);
+      await lib._createCandidateComment(workableCandidate, comment, token);
+      console.log('Successfully created a Workable comment for candidate ID: ' + workableCandidate.id);
+    }
 
     return {
       statusCode: 200,
