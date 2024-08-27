@@ -16,6 +16,10 @@ const LESS_COMMON_LCATS_SHORTCODE = 'C1B881D920';
 const CI_CANDIDATES_SHORTCODE = '837457E467';
 const INTERN_SHORTCODE = 'E0209C3651';
 
+const AMY_AT = 'amy_farmer';
+const CATY_AT = 'caty_vincent';
+const ALISSA_AT = 'alissa_bendele';
+
 // Maps the job title from the CASE application to the Workable short code
 const CASE_JOBS_MAP = {
   'TS/SCI with FSP': {
@@ -61,7 +65,8 @@ function _buildWorkableCandidate(jobApplication) {
  * @returns String - The comment to attach to the candidate
  */
 function _buildWorkableCandidateComment(jobApplication) {
-  let comment = 'Candidate generated through Workable API, originally submitted via CASE website.\n';
+  let comment = `@${AMY_AT} @${CATY_AT} @${ALISSA_AT}\n`;
+  comment += 'Candidate generated through Workable API, originally submitted via CASE website.\n';
   comment += '\nJob application details:\n';
   _.forEach(jobApplication, (value, key) => {
     comment += `${key}: ${value}\n`;
@@ -128,7 +133,7 @@ async function _createCandidateComment(workableCandidate, comment, token) {
       } catch (err) {
         reject(err);
       }
-    }, 20000)
+    }, 40000)
   );
 } // _createCandidateComment
 
