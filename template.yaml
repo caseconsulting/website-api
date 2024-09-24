@@ -227,7 +227,7 @@ Resources:
     Properties:
       Description: Reads a new DynamoDB job application stream record and creates a new candidate using the Workable API
       Handler: index.handler
-      Timeout: 120
+      Timeout: 900
       CodeUri: workable/
       Environment:
         Variables:

@@ -20,6 +20,8 @@ const AMY_AT = 'amy_farmer';
 const CATY_AT = 'caty_vincent';
 const ALISSA_AT = 'alissa_bendele';
 
+const COMMENT_RETRY_COUNT = 20;
+
 // Maps the job title from the CASE application to the Workable short code
 const CASE_JOBS_MAP = {
   'TS/SCI with FSP': {
@@ -112,29 +114,40 @@ async function _createCandidate(candidate, jobShortcode, token) {
  *
  * @returns Object - Workable's API response to the created comment
  */
-async function _createCandidateComment(workableCandidate, comment, token) {
-  // waits 20 seconds to allow Workable api to be able to detect the newly created candidate
-  return new Promise((resolve, reject) =>
-    setTimeout(async () => {
-      try {
-        let candidateId = workableCandidate?.id;
-        let options = {
-          method: 'POST',
-          url: `https://${SUB_DOMAIN}.workable.com/spi/v3/candidates/${candidateId}/comments`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'text/plain',
-            'Content-Type': 'application/json'
-          },
-          data: { member_id: MEMBER_ID, comment: { body: comment } }
-        };
-        let resp = await axios(options);
-        resolve(resp);
-      } catch (err) {
-        reject(err);
-      }
-    }, 40000)
-  );
+async function _createCandidateComment(workableCandidate, comment, token, i) {
+  // waits 30 seconds to allow Workable api to be able to detect the newly created candidate
+  // retry 10 times if the candidate could not be found
+  const WAIT_TIME = 30 * 1000;
+  try {
+    let promise = new Promise((resolve, reject) =>
+      setTimeout(async () => {
+        try {
+          let candidateId = workableCandidate?.id;
+          let options = {
+            method: 'POST',
+            url: `https://${SUB_DOMAIN}.workable.com/spi/v3/candidates/${candidateId}/comments`,
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'text/plain',
+              'Content-Type': 'application/json'
+            },
+            data: { member_id: MEMBER_ID, comment: { body: comment } }
+          };
+          let resp = await axios(options);
+          resolve(resp);
+        } catch (err) {
+          reject(err);
+        }
+      }, WAIT_TIME)
+    );
+    return await promise;
+  } catch (err) {
+    if (i > COMMENT_RETRY_COUNT) throw new Error(err);
+    else {
+      console.log(`Failed to create candidate comment, retrying in ${WAIT_TIME / 1000} seconds`);
+      return await _createCandidateComment(workableCandidate, comment, token, ++i);
+    }
+  }
 } // _createCandidateComment
 
 /**
@@ -250,13 +263,15 @@ async function handler(event) {
 
       let jobShortcode = lib._getWorkableJobShortcode(jobApplication);
 
+      console.log('Attempting to create a Workable candidate');
       let candidateResponse = await lib._createCandidate(candidate, jobShortcode, token);
       console.log('Successfully created a Workable candidate');
 
       let workableCandidate = candidateResponse.data.candidate;
       let comment = lib._buildWorkableCandidateComment(jobApplication);
 
-      await lib._createCandidateComment(workableCandidate, comment, token);
+      console.log('Attempting to create a Workable comment for candidate ID: ' + workableCandidate.id);
+      await lib._createCandidateComment(workableCandidate, comment, token, 1);
       console.log('Successfully created a Workable comment for candidate ID: ' + workableCandidate.id);
     }
 
