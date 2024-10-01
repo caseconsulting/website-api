@@ -1,6 +1,6 @@
 {
   "name": "apply",
-  "version": "1.0.0",
+  "version": "2.3.0",
   "private": true,
   "description": "Accepts 'Apply Now' submissions from website and stores data in DynamoDB table.",
   "main": "index.js",
@@ -9,10 +9,10 @@
     "npm": ">=10.5.0"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.624.0",
-    "@aws-sdk/client-sns": "3.624.0",
-    "@aws-sdk/lib-dynamodb": "3.624.0",
-    "dayjs": "1.11.12",
+    "@aws-sdk/client-dynamodb": "3.662.0",
+    "@aws-sdk/client-sns": "3.662.0",
+    "@aws-sdk/lib-dynamodb": "3.662.0",
+    "dayjs": "1.11.13",
     "lodash": "4.17.21"
   }
 }
