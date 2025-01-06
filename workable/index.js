@@ -51,6 +51,7 @@ const CASE_JOBS_MAP = {
  */
 function _buildWorkableCandidate(jobApplication) {
   return {
+    name: `${jobApplication.firstName} ${jobApplication.lastName}`,
     firstname: jobApplication.firstName,
     lastname: jobApplication.lastName,
     email: jobApplication.email,
