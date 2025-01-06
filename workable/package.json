@@ -1,6 +1,6 @@
 {
   "name": "workable",
-  "version": "1.0.0",
+  "version": "2.3.0",
   "private": true,
   "description": "Reads a new DynamoDB job application stream record and creates a new candidate using the Workable API",
   "main": "index.js",
@@ -9,10 +9,10 @@
     "npm": ">=10.5.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.624.0",
-    "@aws-sdk/client-ses": "3.631.0",
-    "@aws-sdk/client-ssm": "3.590.0",
-    "axios": "1.7.2",
+    "@aws-sdk/client-s3": "3.662.0",
+    "@aws-sdk/client-ses": "3.662.0",
+    "@aws-sdk/client-ssm": "3.662.0",
+    "axios": "1.7.7",
     "lodash": "4.17.21"
   }
 }

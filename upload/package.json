@@ -1,6 +1,6 @@
 {
   "name": "upload",
-  "version": "1.0.0",
+  "version": "2.3.0",
   "private": true,
   "description": "Generates signed URLs to upload files to S3. This bypasses the API Gateway payload size limit of 10 MB.",
   "main": "index.js",
@@ -9,8 +9,8 @@
     "npm": ">=10.5.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.624.0",
-    "@aws-sdk/s3-presigned-post": "3.624.0",
+    "@aws-sdk/client-s3": "3.662.0",
+    "@aws-sdk/s3-presigned-post": "3.662.0",
     "aws-lambda-multipart-parser": "0.1.3"
   }
 }
