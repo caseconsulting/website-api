@@ -8,7 +8,7 @@
     "build": "sam build",
     "build:invoke:apply": "npm run build && npm run invoke:apply",
     "build:invoke:upload": "npm run build && npm run invoke:upload",
-    "clean": "rm -rf .nyc_output coverage",
+    "clean": "rm -rf .aws-sam .nyc_output coverage",
     "deploy:dev": "npm run build && npm run package && npm run deploy:packaged:dev",
     "deploy:test": "npm run build && npm run package && npm run deploy:packaged:test",
     "deploy:prod": "npm run build && npm run package:prod && npm run deploy:packaged:prod",
@@ -16,7 +16,7 @@
     "deploy:packaged:test": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=test ClientDomain=app-website.netlify.app --stack-name website-api-test --capabilities CAPABILITY_IAM --region us-east-1",
     "deploy:packaged:prod": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=prod ClientDomain=www.consultwithcase.com DestinationEmail=afarmer@consultwithcase.com,cmartin@consultwithcase.com,logburn@consultwithcase.com,cvincent@consultwithcase.com,abendele@consultwithcase.com --stack-name website-api-prod --capabilities CAPABILITY_IAM --region us-east-1 --profile prod",
     "download:backend-testing:env": "aws s3 cp s3://case-consulting-website-code-dev/.backend-testing-env .backend-testing-env",
-    "eslint": "eslint . --ext .js --ignore-path .eslintignore --fix",
+    "eslint": "npx eslint",
     "invoke:apply": "sam local invoke ApplyFunction --env-vars env.json --event events/apply.json",
     "invoke:upload": "sam local invoke UploadFunction --env-vars env.json --event events/upload.json",
     "lint": "npm run eslint",
@@ -43,11 +43,12 @@
     "npm": ">=10.5.0"
   },
   "dependencies": {
-    "dotenv": "16.4.5"
+    "dotenv": "16.4.7"
   },
   "devDependencies": {
-    "eslint": "8.57.0",
-    "jasmine": "5.3.0",
+    "@eslint/js": "9.20.0",
+    "eslint": "9.20.0",
+    "jasmine": "5.6.0",
     "lodash": "4.17.21",
     "nyc": "17.1.0",
     "precommit-hook": "3.0.0"
