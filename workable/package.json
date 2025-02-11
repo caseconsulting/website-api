@@ -9,10 +9,10 @@
     "npm": ">=10.5.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.662.0",
-    "@aws-sdk/client-ses": "3.662.0",
-    "@aws-sdk/client-ssm": "3.662.0",
-    "axios": "1.7.7",
+    "@aws-sdk/client-s3": "3.744.0",
+    "@aws-sdk/client-ses": "3.744.0",
+    "@aws-sdk/client-ssm": "3.744.0",
+    "axios": "1.7.9",
     "lodash": "4.17.21"
   }
 }
