@@ -174,6 +174,38 @@ function _getResumeURL(jobApplicationId, fileName) {
 } // _getResumeURL
 
 /**
+ * Waits for an S3 URL to be available with a 200 level response, then returns true.
+ * If the URL is not available after the max try amount, it will error.
+ * 
+ * @param url S3 URL to check
+ * @param options
+ *          - delay: delay between each try, in seconds
+ *          - maxTries: maximum attempts to try
+ */
+async function waitForS3(url, options) {
+  // pull out options or use defaults
+  const { delay = 5, maxTries = 10 } = options;
+
+  // loop until a good response
+  let tries = 0;
+  while (tries < maxTries) {
+    try {
+      const res = await axios.head(url);
+      if (res.status === 200) return true;
+    } catch (e) {
+      // ignore errors, just try again
+    } 
+
+    // iterate again
+    tries++;
+    await new Promise(r => setTimeout(r, delay * 1000));
+  }
+
+  // return false if we can't get the file
+  return false;
+} // waitForS3
+
+/**
  * Gets the Workable job code based on the job application job title.
  *
  * @returns String - The Workable job shortcode
@@ -263,6 +295,11 @@ async function handler(event) {
       let candidate = lib._buildWorkableCandidate(jobApplication);
 
       let jobShortcode = lib._getWorkableJobShortcode(jobApplication);
+
+      console.log('Waiting for S3 URL to be available');
+      let resumeUrl = lib._getResumeURL(jobApplication.id, jobApplication.fileNames)
+      await waitForS3(resumeUrl);
+      console.log('S3 URL is now available');
 
       console.log('Attempting to create a Workable candidate');
       let candidateResponse = await lib._createCandidate(candidate, jobShortcode, token);
