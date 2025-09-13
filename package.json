@@ -43,12 +43,12 @@
     "npm": ">=10.5.0"
   },
   "dependencies": {
-    "dotenv": "17.2.1"
+    "dotenv": "17.2.2"
   },
   "devDependencies": {
-    "@eslint/js": "9.33.0",
-    "eslint": "9.33.0",
-    "jasmine": "5.9.0",
+    "@eslint/js": "9.35.0",
+    "eslint": "9.35.0",
+    "jasmine": "5.10.0",
     "lodash": "4.17.21",
     "nyc": "17.1.0",
     "precommit-hook": "3.0.0"
