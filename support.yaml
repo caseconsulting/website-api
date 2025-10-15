@@ -1,0 +1,216 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  CASE Website API
+
+Parameters:
+  Stage:
+    Type: String
+    Description: Deployment environment (e.g., test or prod)
+    AllowedValues:
+      - test
+      - prod
+  AppCertificate:
+    Description: The ARN for the app certificate saved in ACM
+    Type: String
+    ConstraintDescription: must be the name of an existing certificate.
+  AppDomain:
+    Description: The domain name for the front end app
+    Type: String
+    ConstraintDescription: Must match app certificate name
+    AllowedValues:
+      - test-web.consultwithcase.com
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Api:
+    # API Gateway endpoint type: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
+    EndpointConfiguration: REGIONAL
+
+    # Cross Origin Resources Sharing (CORS): https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-corsconfiguration.html
+    Cors:
+      AllowMethods: "'GET, OPTIONS, POST'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+      AllowOrigin: "'*'"
+
+    # API Gateway access logging: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-accesslogsetting.html
+    AccessLogSetting:
+      DestinationArn: !Sub
+        - arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/case-website-${stageName}:*
+        - stageName: !Ref Stage
+      Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
+
+  Function:
+    Tags:
+      Application: case-website-app
+      Stage: !Ref Stage
+    Environment:
+      Variables:
+        STAGE: !Ref Stage
+Resources:
+  cloudFrontOriginAccessControl:
+    Type: 'AWS::CloudFront::OriginAccessControl'
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Join
+          - ''
+          - - case-website-app-oac-
+            - !Ref Stage
+        Description: Access control for S3 origin (OAC) for case website
+        SigningProtocol: sigv4
+        SigningBehavior: always
+        OriginAccessControlOriginType: s3
+
+  s3Logs:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Join
+        - ''
+        - - !Ref Stage
+          - -case-website-logs
+      LifecycleConfiguration:
+        Rules:
+          - Id: Purge old log files
+            ExpirationInDays: 30
+            Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
+  cloudFrontDistribution:
+    DependsOn:
+      - s3Logs
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt
+              - s3FrontEnd
+              - DomainName
+            Id: !Join
+              - ''
+              - - S3-case-website-app-
+                - !Ref Stage
+            S3OriginConfig: {}
+            OriginAccessControlId: !Ref cloudFrontOriginAccessControl
+          - DomainName: dym3lixek8.execute-api.us-east-1.amazonaws.com
+            Id: !Join
+              - ''
+              - - case-website-api-
+                - !Ref Stage
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+            OriginPath: /Stage
+        Enabled: true
+        Comment: Website
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: !Join
+            - ''
+            - - S3-case-website-app-
+              - !Ref Stage
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          DefaultTTL: 3600
+          MaxTTL: 86400
+          MinTTL: 0
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: !Join
+              - ''
+              - - case-website-api-
+                - !Ref Stage
+            ViewerProtocolPolicy: https-only
+            AllowedMethods:
+              - DELETE
+              - GET
+              - HEAD
+              - OPTIONS
+              - PATCH
+              - POST
+              - PUT
+            CachedMethods:
+              - GET
+              - HEAD
+            Compress: true
+            DefaultTTL: 0
+            MaxTTL: 0
+            MinTTL: 0
+            ForwardedValues:
+              QueryString: true
+              Headers:
+                - Authorization
+              Cookies:
+                Forward: all
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          AcmCertificateArn: !Ref AppCertificate
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
+        Aliases:
+          - !Ref AppDomain
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
+  s3FrontEnd:
+    DependsOn: s3Logs
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Join
+        - ''
+        - - !Ref Stage
+          - -case-website-app
+      LoggingConfiguration:
+        DestinationBucketName: !Ref s3Logs
+        LogFilePrefix: s3-logs/app/
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
+  s3FrontEndBucketPolicy:
+    DependsOn:
+      - s3FrontEnd
+      - cloudFrontOriginAccessControl
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref s3FrontEnd
+      PolicyDocument:
+        Statement:
+          - Sid: >-
+              Grant a CloudFront Origin Identity access to support private
+              content
+            Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref s3FrontEnd
+                - /*
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Condition:
+              StringEquals:
+                AWS:SourceAccount: !Ref AWS::AccountId
+                AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${cloudFrontDistribution}

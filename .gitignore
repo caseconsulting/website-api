@@ -9,4 +9,5 @@ coverage
 /logs
 .nyc_output
 packaged.yaml
+packaged-support.yaml
 *.pid

@@ -36,6 +36,7 @@ phases:
       - echo Entering build phase
       - sam build
       - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file packaged.yaml
+      - aws cloudformation package --template-file support.yaml --s3-bucket $BUCKET --output-template-file packaged-support.yaml
     finally:
       - echo Completed build
   post_build:
@@ -45,3 +46,4 @@ phases:
 artifacts:
   files:
     - packaged.yaml
+    - packaged-support.yaml
