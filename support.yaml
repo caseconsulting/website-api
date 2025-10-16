@@ -60,14 +60,13 @@ Resources:
         SigningProtocol: sigv4
         SigningBehavior: always
         OriginAccessControlOriginType: s3
-
   s3Logs:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Join
         - ''
-        - - !Ref Stage
-          - -case-website-logs
+        - - case-website-logs-
+          - !Ref Stage
       LifecycleConfiguration:
         Rules:
           - Id: Purge old log files
@@ -83,6 +82,48 @@ Resources:
           Value: case-website-app
         - Key: Stage
           Value: !Ref Stage
+  s3FrontEnd:
+    DependsOn: s3Logs
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Join
+        - ''
+        - - case-website-front-end-
+          - !Ref Stage
+      LoggingConfiguration:
+        DestinationBucketName: !Ref s3Logs
+        LogFilePrefix: s3-logs/app/
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
+  s3FrontEndBucketPolicy:
+    DependsOn:
+      - s3FrontEnd
+      - cloudFrontOriginAccessControl
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref s3FrontEnd
+      PolicyDocument:
+        Statement:
+          - Sid: >-
+              Grant a CloudFront Origin Identity access to support private
+              content
+            Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref s3FrontEnd
+                - /*
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Condition:
+              StringEquals:
+                AWS:SourceAccount: !Ref AWS::AccountId
+                AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${cloudFrontDistribution}
   cloudFrontDistribution:
     DependsOn:
       - s3Logs
@@ -111,6 +152,15 @@ Resources:
         Enabled: true
         Comment: Website
         DefaultRootObject: index.html
+        CustomErrorResponses:
+          - ErrorCode: '404'
+            ResponsePagePath: '/index.html'
+            ResponseCode: '200'
+            ErrorCachingMinTTL: '300'
+          - ErrorCode: '403'
+            ResponsePagePath: '/index.html'
+            ResponseCode: '200'
+            ErrorCachingMinTTL: '300'
         DefaultCacheBehavior:
           TargetOriginId: !Join
             - ''
@@ -172,45 +222,3 @@ Resources:
           Value: case-website-app
         - Key: Stage
           Value: !Ref Stage
-  s3FrontEnd:
-    DependsOn: s3Logs
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Join
-        - ''
-        - - !Ref Stage
-          - -case-website-app
-      LoggingConfiguration:
-        DestinationBucketName: !Ref s3Logs
-        LogFilePrefix: s3-logs/app/
-      Tags:
-        - Key: Application
-          Value: case-website-app
-        - Key: Stage
-          Value: !Ref Stage
-  s3FrontEndBucketPolicy:
-    DependsOn:
-      - s3FrontEnd
-      - cloudFrontOriginAccessControl
-    Type: 'AWS::S3::BucketPolicy'
-    Properties:
-      Bucket: !Ref s3FrontEnd
-      PolicyDocument:
-        Statement:
-          - Sid: >-
-              Grant a CloudFront Origin Identity access to support private
-              content
-            Action:
-              - 's3:GetObject'
-            Effect: Allow
-            Resource: !Join
-              - ''
-              - - 'arn:aws:s3:::'
-                - !Ref s3FrontEnd
-                - /*
-            Principal:
-              Service: cloudfront.amazonaws.com
-            Condition:
-              StringEquals:
-                AWS:SourceAccount: !Ref AWS::AccountId
-                AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${cloudFrontDistribution}
