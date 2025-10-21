@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: AWS::Serverless-2016-10-31
+Transform: AWS::Serverless-2016-10-31 # TODO: get rid of it?
 Description: >
-  CASE Website API
+  CASE Website Support
 
 Parameters:
   Stage:
@@ -21,32 +21,6 @@ Parameters:
     AllowedValues:
       - test-web.consultwithcase.com
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-Globals:
-  Api:
-    # API Gateway endpoint type: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
-    EndpointConfiguration: REGIONAL
-
-    # Cross Origin Resources Sharing (CORS): https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-corsconfiguration.html
-    Cors:
-      AllowMethods: "'GET, OPTIONS, POST'"
-      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
-      AllowOrigin: "'*'"
-
-    # API Gateway access logging: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-accesslogsetting.html
-    AccessLogSetting:
-      DestinationArn: !Sub
-        - arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/case-website-${stageName}:*
-        - stageName: !Ref Stage
-      Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
-
-  Function:
-    Tags:
-      Application: case-website-app
-      Stage: !Ref Stage
-    Environment:
-      Variables:
-        STAGE: !Ref Stage
 Resources:
   cloudFrontOriginAccessControl:
     Type: 'AWS::CloudFront::OriginAccessControl'
@@ -70,7 +44,7 @@ Resources:
       LifecycleConfiguration:
         Rules:
           - Id: Purge old log files
-            ExpirationInDays: 30
+            ExpirationInDays: 120
             Status: Enabled
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
@@ -90,6 +64,11 @@ Resources:
         - ''
         - - case-website-front-end-
           - !Ref Stage
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
       LoggingConfiguration:
         DestinationBucketName: !Ref s3Logs
         LogFilePrefix: s3-logs/app/
@@ -101,15 +80,13 @@ Resources:
   s3FrontEndBucketPolicy:
     DependsOn:
       - s3FrontEnd
-      - cloudFrontOriginAccessControl
+      - cloudFrontDistribution
     Type: 'AWS::S3::BucketPolicy'
     Properties:
       Bucket: !Ref s3FrontEnd
       PolicyDocument:
         Statement:
-          - Sid: >-
-              Grant a CloudFront Origin Identity access to support private
-              content
+          - Sid: Grant a CloudFront Origin Access Control to support private content
             Action:
               - 's3:GetObject'
             Effect: Allow
@@ -126,7 +103,8 @@ Resources:
                 AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${cloudFrontDistribution}
   cloudFrontDistribution:
     DependsOn:
-      - s3Logs
+      - s3FrontEnd
+      - cloudFrontOriginAccessControl
     Type: 'AWS::CloudFront::Distribution'
     Properties:
       DistributionConfig:
@@ -136,11 +114,11 @@ Resources:
               - DomainName
             Id: !Join
               - ''
-              - - S3-case-website-app-
+              - - case-website-app-
                 - !Ref Stage
             S3OriginConfig: {}
             OriginAccessControlId: !Ref cloudFrontOriginAccessControl
-          - DomainName: dym3lixek8.execute-api.us-east-1.amazonaws.com
+          - DomainName: !ImportValue ApiDomain
             Id: !Join
               - ''
               - - case-website-api-
@@ -148,7 +126,7 @@ Resources:
             CustomOriginConfig:
               HTTPSPort: 443
               OriginProtocolPolicy: https-only
-            OriginPath: /Stage
+            OriginPath: /Prod
         Enabled: true
         Comment: Website
         DefaultRootObject: index.html
@@ -164,7 +142,7 @@ Resources:
         DefaultCacheBehavior:
           TargetOriginId: !Join
             - ''
-            - - S3-case-website-app-
+            - - case-website-app-
               - !Ref Stage
           ViewerProtocolPolicy: redirect-to-https
           AllowedMethods:
@@ -174,14 +152,8 @@ Resources:
           CachedMethods:
             - GET
             - HEAD
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
           Compress: true
-          DefaultTTL: 3600
-          MaxTTL: 86400
-          MinTTL: 0
-          ForwardedValues:
-            QueryString: false
-            Cookies:
-              Forward: none
         CacheBehaviors:
           - PathPattern: /api/*
             TargetOriginId: !Join
@@ -201,22 +173,15 @@ Resources:
               - GET
               - HEAD
             Compress: true
-            DefaultTTL: 0
-            MaxTTL: 0
-            MinTTL: 0
-            ForwardedValues:
-              QueryString: true
-              Headers:
-                - Authorization
-              Cookies:
-                Forward: all
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # CachingDisabled
         PriceClass: PriceClass_100
         ViewerCertificate:
-          AcmCertificateArn: !Ref AppCertificate
-          MinimumProtocolVersion: TLSv1.2_2021
+          AcmCertificateArn: !Ref AppCertificate # TODO: add new resource for appcert
+          MinimumProtocolVersion: TLSv1.3_2025
           SslSupportMethod: sni-only
         Aliases:
           - !Ref AppDomain
+        # WebAclId: !Ref WebAcl
       Tags:
         - Key: Application
           Value: case-website-app
