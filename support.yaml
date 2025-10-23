@@ -1,5 +1,4 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: AWS::Serverless-2016-10-31 # TODO: get rid of it?
 Description: >
   CASE Website Support
 
@@ -10,16 +9,14 @@ Parameters:
     AllowedValues:
       - test
       - prod
-  AppCertificate:
-    Description: The ARN for the app certificate saved in ACM
-    Type: String
-    ConstraintDescription: must be the name of an existing certificate.
-  AppDomain:
-    Description: The domain name for the front end app
-    Type: String
-    ConstraintDescription: Must match app certificate name
-    AllowedValues:
-      - test-web.consultwithcase.com
+
+Mappings:
+  StageConfig:
+    # Top-level keys are the stage names
+    test:
+      AppDomain: test-web.consultwithcase.com
+    prod:
+      AppDomain: consultwithcase.com
 
 Resources:
   cloudFrontOriginAccessControl:
@@ -34,6 +31,41 @@ Resources:
         SigningProtocol: sigv4
         SigningBehavior: always
         OriginAccessControlOriginType: s3
+  acmCertificate:
+    Type: 'AWS::CertificateManager::Certificate'
+    Properties:
+      DomainName: !FindInMap
+        - StageConfig
+        - !Ref Stage
+        - AppDomain
+      ValidationMethod: DNS
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
+  webAcl:
+    Type: 'AWS::WAFv2::WebACL'
+    Properties:
+      DefaultAction:
+        Allow: {}
+      Scope: CLOUDFRONT
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: !Join
+          - ''
+          - - case-website-app-waf-
+            - !Ref Stage
+        SampledRequestsEnabled: true
+      Name: !Join
+        - ''
+        - - case-website-app-waf-
+          - !Ref Stage
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
   s3Logs:
     Type: 'AWS::S3::Bucket'
     Properties:
@@ -105,6 +137,8 @@ Resources:
     DependsOn:
       - s3FrontEnd
       - cloudFrontOriginAccessControl
+      - acmCertificate
+      - webAcl
     Type: 'AWS::CloudFront::Distribution'
     Properties:
       DistributionConfig:
@@ -118,7 +152,8 @@ Resources:
                 - !Ref Stage
             S3OriginConfig: {}
             OriginAccessControlId: !Ref cloudFrontOriginAccessControl
-          - DomainName: !ImportValue ApiDomain
+          - DomainName: !ImportValue
+              'Fn::Sub': 'case-website-${Stage}:ApiDomain'
             Id: !Join
               - ''
               - - case-website-api-
@@ -176,12 +211,15 @@ Resources:
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # CachingDisabled
         PriceClass: PriceClass_100
         ViewerCertificate:
-          AcmCertificateArn: !Ref AppCertificate # TODO: add new resource for appcert
+          AcmCertificateArn: !Ref acmCertificate # TODO: add new resource for appcert
           MinimumProtocolVersion: TLSv1.3_2025
           SslSupportMethod: sni-only
+        WebACLId: !GetAtt webAcl.Arn
         Aliases:
-          - !Ref AppDomain
-        # WebAclId: !Ref WebAcl
+          - !FindInMap
+            - StageConfig
+            - !Ref Stage
+            - AppDomain
       Tags:
         - Key: Application
           Value: case-website-app
