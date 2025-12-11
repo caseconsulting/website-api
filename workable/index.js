@@ -174,6 +174,30 @@ function _getResumeURL(jobApplicationId, fileName) {
 } // _getResumeURL
 
 /**
+ * Waits until an S3 URL is reachable, then returns true. Returns false if too many tries have
+ * been attempted.
+ * 
+ * @returns Boolean - whether or not the URL is reachable
+ */
+async function _verifyS3Upload(url) {
+  const MAX_TRIES = 10;
+  const BUFFER_SECS = 5;
+
+  for (let i = 0; i < MAX_TRIES; i++) {
+    try {
+      let resp = await axios.get(url);
+      if (resp.status >= 200 && resp.status < 300) return true;
+      await new Promise(r => setTimeout(r, BUFFER_SECS * 1000)); // non-error invalid status code
+    } catch (e) {
+      await new Promise(r => setTimeout(r, BUFFER_SECS * 1000)); // if axios errored
+    }
+  }
+
+  // for loop never returned true, URL is unreachable
+  throw new Error(`S3 URL is not reachable after ${MAX_TRIES} tries with ${BUFFER_SECS} buffer: ${url}`);
+}
+
+/**
  * Gets the Workable job code based on the job application job title.
  *
  * @returns String - The Workable job shortcode
@@ -264,6 +288,10 @@ async function handler(event) {
 
       let jobShortcode = lib._getWorkableJobShortcode(jobApplication);
 
+      console.log('Verifying resume submission to S3');
+      await lib._verifyS3Upload(lib._getResumeURL(jobApplication.id, jobApplication.fileNames));
+      console.log('Verified resume submission to S3');
+
       console.log('Attempting to create a Workable candidate');
       let candidateResponse = await lib._createCandidate(candidate, jobShortcode, token);
       console.log('Successfully created a Workable candidate');
@@ -295,6 +323,7 @@ lib = {
   _createCandidateComment,
   _getCandidateSummary,
   _getResumeURL,
+  _verifyS3Upload,
   _getWorkableJobShortcode,
   _getSecret,
   _sendFailureEmail,
