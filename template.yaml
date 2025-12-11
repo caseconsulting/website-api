@@ -280,6 +280,11 @@ Outputs:
   TableStream:
     Description: 'Stream ARN of DynamoDB table used by Upload function'
     Value: !GetAtt Table.StreamArn
+  ApiDomain:
+    Description: 'API Gateway domain name'
+    Value: !Sub '${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com'
+    Export:
+      Name: !Sub 'case-website-${Stage}:ApiDomain'
   ApiEndpoint:
     Description: 'API Gateway endpoint URL for Prod stage'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'

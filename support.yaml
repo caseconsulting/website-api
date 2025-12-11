@@ -1,0 +1,227 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  CASE Website Support
+
+Parameters:
+  Stage:
+    Type: String
+    Description: Deployment environment (e.g., test or prod)
+    AllowedValues:
+      - test
+      - prod
+
+Mappings:
+  StageConfig:
+    # Top-level keys are the stage names
+    test:
+      AppDomain: test-web.consultwithcase.com
+    prod:
+      AppDomain: consultwithcase.com
+
+Resources:
+  cloudFrontOriginAccessControl:
+    Type: 'AWS::CloudFront::OriginAccessControl'
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Join
+          - ''
+          - - case-website-app-oac-
+            - !Ref Stage
+        Description: Access control for S3 origin (OAC) for case website
+        SigningProtocol: sigv4
+        SigningBehavior: always
+        OriginAccessControlOriginType: s3
+  acmCertificate:
+    Type: 'AWS::CertificateManager::Certificate'
+    Properties:
+      DomainName: !FindInMap
+        - StageConfig
+        - !Ref Stage
+        - AppDomain
+      ValidationMethod: DNS
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
+  webAcl:
+    Type: 'AWS::WAFv2::WebACL'
+    Properties:
+      DefaultAction:
+        Allow: {}
+      Scope: CLOUDFRONT
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: !Join
+          - ''
+          - - case-website-app-waf-
+            - !Ref Stage
+        SampledRequestsEnabled: true
+      Name: !Join
+        - ''
+        - - case-website-app-waf-
+          - !Ref Stage
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
+  s3Logs:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Join
+        - ''
+        - - case-website-logs-
+          - !Ref Stage
+      LifecycleConfiguration:
+        Rules:
+          - Id: Purge old log files
+            ExpirationInDays: 120
+            Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
+  s3FrontEnd:
+    DependsOn: s3Logs
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Join
+        - ''
+        - - case-website-front-end-
+          - !Ref Stage
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LoggingConfiguration:
+        DestinationBucketName: !Ref s3Logs
+        LogFilePrefix: s3-logs/app/
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
+  s3FrontEndBucketPolicy:
+    DependsOn:
+      - s3FrontEnd
+      - cloudFrontDistribution
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref s3FrontEnd
+      PolicyDocument:
+        Statement:
+          - Sid: Grant a CloudFront Origin Access Control to support private content
+            Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref s3FrontEnd
+                - /*
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Condition:
+              StringEquals:
+                AWS:SourceAccount: !Ref AWS::AccountId
+                AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${cloudFrontDistribution}
+  cloudFrontDistribution:
+    DependsOn:
+      - s3FrontEnd
+      - cloudFrontOriginAccessControl
+      - acmCertificate
+      - webAcl
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt
+              - s3FrontEnd
+              - DomainName
+            Id: !Join
+              - ''
+              - - case-website-app-
+                - !Ref Stage
+            S3OriginConfig: {}
+            OriginAccessControlId: !Ref cloudFrontOriginAccessControl
+          - DomainName: !ImportValue
+              'Fn::Sub': 'case-website-${Stage}:ApiDomain'
+            Id: !Join
+              - ''
+              - - case-website-api-
+                - !Ref Stage
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+            OriginPath: /Prod
+        Enabled: true
+        Comment: Website
+        DefaultRootObject: index.html
+        CustomErrorResponses:
+          - ErrorCode: '404'
+            ResponsePagePath: '/index.html'
+            ResponseCode: '200'
+            ErrorCachingMinTTL: '300'
+          - ErrorCode: '403'
+            ResponsePagePath: '/index.html'
+            ResponseCode: '200'
+            ErrorCachingMinTTL: '300'
+        DefaultCacheBehavior:
+          TargetOriginId: !Join
+            - ''
+            - - case-website-app-
+              - !Ref Stage
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
+          Compress: true
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: !Join
+              - ''
+              - - case-website-api-
+                - !Ref Stage
+            ViewerProtocolPolicy: https-only
+            AllowedMethods:
+              - DELETE
+              - GET
+              - HEAD
+              - OPTIONS
+              - PATCH
+              - POST
+              - PUT
+            CachedMethods:
+              - GET
+              - HEAD
+            Compress: true
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # CachingDisabled
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          AcmCertificateArn: !Ref acmCertificate # TODO: add new resource for appcert
+          MinimumProtocolVersion: TLSv1.3_2025
+          SslSupportMethod: sni-only
+        WebACLId: !GetAtt webAcl.Arn
+        Aliases:
+          - !FindInMap
+            - StageConfig
+            - !Ref Stage
+            - AppDomain
+      Tags:
+        - Key: Application
+          Value: case-website-app
+        - Key: Stage
+          Value: !Ref Stage
