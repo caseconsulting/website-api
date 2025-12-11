@@ -182,7 +182,7 @@ function _getResumeURL(jobApplicationId, fileName) {
 async function _verifyS3Upload(url) {
   const MAX_TRIES = 10;
   const BUFFER_SECS = 5;
-  
+
   for (let i = 0; i < MAX_TRIES; i++) {
     try {
       let resp = await axios.get(url);
@@ -323,6 +323,7 @@ lib = {
   _createCandidateComment,
   _getCandidateSummary,
   _getResumeURL,
+  _verifyS3Upload,
   _getWorkableJobShortcode,
   _getSecret,
   _sendFailureEmail,
