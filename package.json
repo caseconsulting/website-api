@@ -12,10 +12,12 @@
     "deploy:dev": "npm run build && npm run package && npm run deploy:packaged:dev",
     "deploy:test": "npm run build && npm run package && npm run deploy:packaged:test",
     "deploy:prod": "npm run build && npm run package:prod && npm run deploy:packaged:prod",
-    "deploy:packaged:dev": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=dev ClientProtocol=http ClientDomain=localhost:8080 DestinationEmail=cmartin@consultwithcase.com,logburn@consultwithcase.com --stack-name website-api-dev --capabilities CAPABILITY_IAM --region us-east-1",
+    "deploy:packaged:dev": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=dev ClientProtocol=http ClientDomain=localhost:8080 DestinationEmail=zramsis@consultwithcase.com,logburn@consultwithcase.com --stack-name website-api-dev --capabilities CAPABILITY_IAM --region us-east-1",
     "deploy:packaged:test": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=test ClientDomain=app-website.netlify.app --stack-name website-api-test --capabilities CAPABILITY_IAM --region us-east-1",
-    "deploy:packaged:prod": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=prod ClientDomain=www.consultwithcase.com DestinationEmail=afarmer@consultwithcase.com,cmartin@consultwithcase.com,logburn@consultwithcase.com,cvincent@consultwithcase.com,abendele@consultwithcase.com --stack-name website-api-prod --capabilities CAPABILITY_IAM --region us-east-1 --profile prod",
+    "deploy:packaged:prod": "sam deploy --template-file packaged.yaml --parameter-overrides Stage=prod ClientDomain=www.consultwithcase.com DestinationEmail=afarmer@consultwithcase.com,zramsis@consultwithcase.com,logburn@consultwithcase.com,cvincent@consultwithcase.com,abendele@consultwithcase.com --stack-name website-api-prod --capabilities CAPABILITY_IAM --region us-east-1 --profile prod",
     "download:backend-testing:env": "aws s3 cp s3://case-consulting-website-code-dev/.backend-testing-env .backend-testing-env",
+    "deploy:support:test": "npm run package:support && aws cloudformation deploy --template-file packaged-support.yaml --stack-name case-website-support-test --parameter-overrides Stage=test",
+    "deploy:support:prod": "npm run package:support && aws cloudformation deploy --template-file packaged-support.yaml --stack-name case-website-support-prod --parameter-overrides Stage=prod",
     "eslint": "npx eslint",
     "invoke:apply": "sam local invoke ApplyFunction --env-vars env.json --event events/apply.json",
     "invoke:upload": "sam local invoke UploadFunction --env-vars env.json --event events/upload.json",
@@ -26,6 +28,7 @@
     "outdated:workable": "cd workable && npm outdated",
     "package": "sam package --s3-bucket case-consulting-website-code-dev --output-template-file packaged.yaml",
     "package:prod": "sam package --s3-bucket case-consulting-website-code-prod --output-template-file packaged.yaml --profile prod",
+    "package:support": "aws cloudformation package --template-file support.yaml --s3-bucket case-consulting-website-code-dev --output-template-file packaged-support.yaml",
     "precommit": "npm run validate && npm run eslint && npm run test",
     "reinstall": "npm install && npm ci && npm run reinstall:apply && npm run reinstall:upload && npm run reinstall:workable",
     "reinstall:apply": "cd apply && npm install && npm ci",
@@ -55,7 +58,6 @@
   },
   "pre-commit": [
     "validate",
-    "eslint",
     "test"
   ]
 }
