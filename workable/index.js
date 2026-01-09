@@ -19,6 +19,7 @@ const INTERN_SHORTCODE = 'E0209C3651';
 const AMY_AT = 'amy_farmer';
 const CATY_AT = 'caty_vincent';
 const ALISSA_AT = 'alissa_bendele';
+const CILICIA_AT = 'cilicia_ferguson'; // TODO:
 
 const COMMENT_RETRY_COUNT = 20;
 
