@@ -9,8 +9,8 @@
     "npm": ">=10.5.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.911.0",
-    "@aws-sdk/s3-presigned-post": "3.911.0",
+    "@aws-sdk/client-s3": "3.970.0",
+    "@aws-sdk/s3-presigned-post": "3.970.0",
     "aws-lambda-multipart-parser": "0.1.3"
   }
 }
