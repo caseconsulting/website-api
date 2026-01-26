@@ -13,6 +13,6 @@
     "@aws-sdk/client-sns": "3.970.0",
     "@aws-sdk/lib-dynamodb": "3.970.0",
     "dayjs": "1.11.19",
-    "lodash": "4.17.21"
+    "lodash": "4.17.23"
   }
 }
