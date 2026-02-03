@@ -16,9 +16,13 @@ const LESS_COMMON_LCATS_SHORTCODE = 'C1B881D920';
 const CI_CANDIDATES_SHORTCODE = '837457E467';
 const INTERN_SHORTCODE = 'E0209C3651';
 
-const AMY_AT = 'amy_farmer';
-const CATY_AT = 'caty_vincent';
-const ALISSA_AT = 'alissa_bendele';
+// people to tag in a comment so that they are notified on candidate creation
+const peopleToTag = [
+  'amy_farmer',
+  'caty_vincent', // if removing Caty, check that MEMBER_ID doesn't also need to change
+  'alissa_bendele',
+  'cilicia_ferguson'
+];
 
 const COMMENT_RETRY_COUNT = 20;
 
@@ -68,7 +72,7 @@ function _buildWorkableCandidate(jobApplication) {
  * @returns String - The comment to attach to the candidate
  */
 function _buildWorkableCandidateComment(jobApplication) {
-  let comment = `@${AMY_AT} @${CATY_AT} @${ALISSA_AT}\n`;
+  let comment = `@${peopleToTag.join(' @')}\n`;
   comment += 'Candidate generated through Workable API, originally submitted via CASE website.\n';
   comment += '\nJob application details:\n';
   _.forEach(jobApplication, (value, key) => {
