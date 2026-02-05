@@ -1,0 +1,17 @@
+{
+    "firstName": "Test",
+    "lastName": "User",
+    "email": "test@example.com",
+    "jobTitles": [
+        "Software Developer"
+    ],
+    "clearance": "None",
+    "otherJobTitle": "",
+    "hearAboutUs": "Internet",
+    "referralHearAboutUs": "",
+    "otherHearAboutUs": "",
+    "comments": "This is a test submission",
+    "fileNames": [
+        "TestUserResume.pdf"
+    ]
+}
