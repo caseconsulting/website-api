@@ -46,7 +46,7 @@
     "npm": ">=10.5.0"
   },
   "dependencies": {
-    "dotenv": "17.2.3"
+    "dotenv": "17.2.4"
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",

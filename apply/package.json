@@ -9,9 +9,9 @@
     "npm": ">=10.5.0"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.980.0",
-    "@aws-sdk/client-sns": "3.980.0",
-    "@aws-sdk/lib-dynamodb": "3.980.0",
+    "@aws-sdk/client-dynamodb": "3.984.0",
+    "@aws-sdk/client-sns": "3.984.0",
+    "@aws-sdk/lib-dynamodb": "3.984.0",
     "dayjs": "1.11.19",
     "lodash": "4.17.23"
   }
