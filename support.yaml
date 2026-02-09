@@ -18,6 +18,11 @@ Mappings:
     prod:
       AppDomain: consultwithcase.com
 
+Conditions:
+  IsProd: !Equals
+    - !Ref Stage
+    - prod
+
 Resources:
   cloudFrontOriginAccessControl:
     Type: 'AWS::CloudFront::OriginAccessControl'
@@ -38,6 +43,16 @@ Resources:
         - StageConfig
         - !Ref Stage
         - AppDomain
+      SubjectAlternativeNames: !If
+        - IsProd
+        - - !Join
+            - ''
+            - - 'www.'
+              - !FindInMap
+                - StageConfig
+                - !Ref Stage
+                - AppDomain
+        - !Ref AWS::NoValue
       ValidationMethod: DNS
       Tags:
         - Key: Application
@@ -215,11 +230,23 @@ Resources:
           MinimumProtocolVersion: TLSv1.3_2025
           SslSupportMethod: sni-only
         WebACLId: !GetAtt webAcl.Arn
-        Aliases:
-          - !FindInMap
-            - StageConfig
-            - !Ref Stage
-            - AppDomain
+        Aliases: !If
+          - IsProd
+          - - !FindInMap
+              - StageConfig
+              - !Ref Stage
+              - AppDomain
+            - !Join
+              - ''
+              - - 'www.'
+                - !FindInMap
+                  - StageConfig
+                  - !Ref Stage
+                  - AppDomain
+          - - !FindInMap
+              - StageConfig
+              - !Ref Stage
+              - AppDomain
       Tags:
         - Key: Application
           Value: case-website-app

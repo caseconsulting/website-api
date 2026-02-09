@@ -30,7 +30,7 @@ Globals:
     Tags:
       Application: website
       Stage: !Ref Stage
-
+      
   Api:
     # API Gateway endpoint type: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
     EndpointConfiguration: REGIONAL
@@ -63,6 +63,10 @@ Globals:
 
 Conditions:
   WildcardDomain: !Equals [!Ref ClientDomain, '*']
+  IsProd: !Equals
+    - !Ref Stage
+    - prod
+
 
 Resources:
   Bucket:
@@ -84,15 +88,26 @@ Resources:
             AllowedMethods:
               - POST
               - PUT
-            AllowedOrigins:
+            AllowedOrigins: !If
+              - WildcardDomain
+              - - !Ref ClientDomain
               - !If
-                - WildcardDomain
-                - !Ref ClientDomain
-                - !Join
-                  - ''
-                  - - !Ref ClientProtocol
-                    - '://'
-                    - !Ref ClientDomain
+                - IsProd
+                - - !Join
+                    - ''
+                    - - !Ref ClientProtocol
+                      - '://'
+                      - !Ref ClientDomain
+                  - !Join
+                    - ''
+                    - - !Ref ClientProtocol
+                      - '://www.'
+                      - !Ref ClientDomain
+                - - !Join
+                    - ''
+                    - - !Ref ClientProtocol
+                      - '://'
+                      - !Ref ClientDomain
             Id: jobApplicationsPostCorsRule
             MaxAge: '180'
       OwnershipControls:
